@@ -15,13 +15,15 @@ import spray.json.pimpAny
 trait JsonFormats extends DefaultJsonProtocol {
   case class SendPost(userId: Int, time: Long, msg: String)
   case class UserProfile(uname: String, dob: String, email: String)
-  case class UserInfo(uid: Int, uname: String, dob: String, email: String, pass: String, postCount: Int, friendsCount: Int)
+  case class UserInfo(uid: Int, uname: String, dob: String, email: String, pass: String, postCount: Int, friendsCount: Int, key: String)
   case class SendMsg(senderId: Int, time: Long, msg: String, recepientId: Int)
+  case class SendFriendRequest(senderId: String, recepientId: String,key:String)
 
   implicit val postFormat = jsonFormat3(SendPost)
   implicit val userProfileFormat = jsonFormat3(UserProfile)
-  implicit val userInfoFormat = jsonFormat7(UserInfo)
+  implicit val userInfoFormat = jsonFormat8(UserInfo)
   implicit val msgFormat = jsonFormat4(SendMsg)
+  implicit val friendRequestFormat = jsonFormat3(SendFriendRequest)
 
   implicit object TimelineJsonFormat extends JsonFormat[FacebookServer.Posts] {
     def write(c: FacebookServer.Posts) = JsObject(

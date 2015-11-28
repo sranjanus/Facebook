@@ -18,6 +18,7 @@ import akka.util.Timeout.durationToTimeout
 import spray.can.Http
 import spray.http.ContentTypes
 import spray.http.HttpEntity
+import spray.http.HttpHeader
 import spray.http.HttpEntity.apply
 import spray.http.HttpMethods.GET
 import spray.http.HttpMethods.POST
@@ -56,10 +57,12 @@ object HttpServer extends JsonFormats {
 		def receive = {
 			case _: Http.Connected => sender ! Http.Register(self)
 
-			case HttpRequest(POST, Uri.Path("/createAccount"), _, entity: HttpEntity.NonEmpty, _) =>
+			//Working end points
+			case HttpRequest(POST, Uri.Path("/createAccount"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
+
 				val info = entity.data.asString.parseJson.convertTo[UserInfo]
 				var client = sender
-				val result = (server ? FacebookServer.Server.CreateUser(info.uname, info.dob, info.email, info.pass)).mapTo[String]
+				val result = (server ? FacebookServer.Server.CreateUser(info.uname, info.dob, info.email, info.pass,info.key)).mapTo[String]
 				result onComplete {
 					case result =>
 						println(result)
@@ -67,6 +70,43 @@ object HttpServer extends JsonFormats {
 					
 				}
 
+			case HttpRequest(POST, Uri.Path("/sendFriendRequest"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
+
+				val info = entity.data.asString.parseJson.convertTo[SendFriendRequest]
+				var client = sender
+				val result = (server ? FacebookServer.Server.AddFriendRequest(info.senderId, info.recepientId,info.key)).mapTo[String]
+				result onComplete {
+					case result =>
+						println(result)
+						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
+				}
+
+			case HttpRequest(POST, Uri.Path("/acceptFriendRequest"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
+
+				val info = entity.data.asString.parseJson.convertTo[SendFriendRequest]
+				var client = sender
+				val result = (server ? FacebookServer.Server.AcceptFriendRequest(info.senderId, info.recepientId,info.key)).mapTo[String]
+				result onComplete {
+					case result =>
+						println(result)
+						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
+				}
+
+			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/user" =>
+				var id = path.split("/").last.toInt
+				println(id);
+				var client = sender
+				val result = (server ? FacebookServer.Server.SendUserProfile(id)).mapTo[String]
+				println("-- "+id);
+				result onSuccess {
+					case result =>
+						println(result);
+						val body = HttpEntity(ContentTypes.`application/json`, result)
+						client ! HttpResponse(entity = body)
+				}
+
+
+			//Not working end points
 			case HttpRequest(POST, Uri.Path("/login"), _, entity: HttpEntity.NonEmpty, _) =>
 				val info = entity.data.asString.parseJson.convertTo[UserInfo]
 				var client = sender
@@ -117,24 +157,7 @@ object HttpServer extends JsonFormats {
 						val body = HttpEntity(ContentTypes.`application/json`, result.toJson.toString)
 						client ! HttpResponse(entity = body)
 				}
-
-			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/user" =>
-				var id = path.split("/").last.toInt
-				println(id);
-				var client = sender
-				val result = (server ? FacebookServer.Server.SendUserProfile(id)).mapTo[String]
-				println("-- "+id);
-				result onSuccess {
-					case result =>
-						println(result);
-						val body = HttpEntity(ContentTypes.`application/json`, result)
-						client ! HttpResponse(entity = body)
-				}
-				result onComplete{
-					case result => 
-						println(result); 
-				}
-
+				
 			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/friends" =>
 				var id = path.split("/").last.toInt
 				var client = sender

@@ -21,17 +21,29 @@ import akka.routing.SmallestMailboxPool
 object FacebookServer extends JsonFormats{
 	case class sample(id: Int, name: String, noOfPosts: Int, friendsCount: Int) extends java.io.Serializable
 
-	class User (id: Int, uName: String, dob: String, email: String, pass: String) {
+	class User (id: Int, uName: String, dob: String, email: String, pass: String,key : String) {
 		var userId = id
 		var userName = uName
 		var dateOfBirth = dob
 		var emailAdd = email
 		var password = pass
+		var publicKey = key
 		var newsfeed: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
 		var timeline: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
 		var messages: ArrayBuffer[String] = ArrayBuffer.empty
-		var friends: CopyOnWriteArrayList[Int] = new CopyOnWriteArrayList()
+		var friends: ConcurrentHashMap[String, String] = new ConcurrentHashMap()
+		var friendRequests: ConcurrentHashMap[String, String] = new ConcurrentHashMap()
+		var pages: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
 	}
+
+	class Page(pid:String,name:String,details:String,createrId:String){
+		var pid = pid
+		var name = name
+		var details = details
+		var createrId = createrId
+		var posts: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
+	}
+
 
 	class Posts(pid: String, id: Int, post: String, time: Long, tagList: ArrayBuffer[String] = ArrayBuffer.empty, hashtagList: ArrayBuffer[String] = ArrayBuffer.empty){
 		var authorId = id
@@ -58,7 +70,7 @@ object FacebookServer extends JsonFormats{
 	var rdCtr: AtomicInteger = new AtomicInteger()
 	var mCtr: AtomicInteger = new AtomicInteger()
 
-	var users: CopyOnWriteArrayList[User] = new CopyOnWriteArrayList()
+	var users: ConcurrentHashMap[String, User] = new ConcurrentHashMap()
 	var postStore: ConcurrentHashMap[String, Posts] = new ConcurrentHashMap()
 	var msgStore: ConcurrentHashMap[String, Messages] = new ConcurrentHashMap()
 
@@ -68,12 +80,12 @@ object FacebookServer extends JsonFormats{
 	
 		val watcher = system.actorOf(Props(new Watcher()), name = "Watcher")
 
-    	watcher ! FacebookServer.Watcher.Init(args(0).toInt)
+    	watcher ! FacebookServer.Watcher.Init
 
 	}
 
 	object Watcher {
-    case class Init(noOfUsers: Int)
+    case object Init
     case object Time
   }
 
@@ -90,39 +102,14 @@ object FacebookServer extends JsonFormats{
     // Watch the router. It calls the terminate sequence when router is terminated.
     context.watch(router)
 
-    def Initialize(noOfUsers: Int) {
-      // // create a distribution for followers per user.
-      // var FollowersPerUser = pdf.exponential(1.0 / 208.0).sample(noOfUsers).map(_.toInt)
-      // FollowersPerUser = FollowersPerUser.sortBy(a => -a)
-      // // create a distribution for followings per user.
-      // var FollowingPerUser = pdf.exponential(1.0 / 238.0).sample(noOfUsers).map(_.toInt)
-      // FollowingPerUser = FollowingPerUser.sortBy(a => a)
-
-      // for (i <- 0 to noOfUsers - 1) {
-      //   users.add(i, new User(i))
-      // }
-
-      // // assign followers to each user.
-      // for (j <- 0 to noOfUsers - 1) {
-      //   var k = -1
-      //   // construct list of followers.
-      //   while (FollowingPerUser(j) > 0 && k < noOfUsers) {
-      //     k += 1
-      //     if (k < noOfUsers && FollowersPerUser(k) > 0) {
-      //       users.get(j).following.add(k)
-      //       users.get(k).followers.add(j)
-      //       FollowingPerUser(j) -= 1
-      //       FollowersPerUser(k) -= 1
-      //     }
-      //   }
-      // }
+    def Initialize() {
       println("Server started")
     }
 
     // Receive block for the Watcher.
     final def receive = LoggingReceive {
-      case Init(noOfUsers) =>
-        Initialize(noOfUsers)
+      case Init =>
+        Initialize()
         System.gc()
 
       case Time =>
@@ -144,7 +131,7 @@ object FacebookServer extends JsonFormats{
   	}
 
 	object Server {
-		case class CreateUser(uName: String, dob: String, email: String, pass: String)
+		case class CreateUser(uName: String, dob: String, email: String, pass: String,key:String)
 		case class LoginUser(uName: String, pass: String)
 		case class AddPost(userId: Int, time: Long, msg: String)
 		case class AddMsg(sId: Int, time: Long, msg: String, rId: Int)
@@ -153,6 +140,8 @@ object FacebookServer extends JsonFormats{
 		case class SendTimeline(userId: Int)
 		case class SendFriends(userId: Int)
 		case class SendUserProfile(userId: Int)
+		case class AddFriendRequest(userId:String,friendId: String,key:String)
+		case class AcceptFriendRequest(userId:String,friendId: String,key:String)
 	}
 
 	class Server extends Actor {
@@ -160,56 +149,57 @@ object FacebookServer extends JsonFormats{
 		import context._
 
 		def checkUser(uName: String): Boolean = {
-			var itr = users.iterator
-			while(itr.hasNext){
-				var tmp = itr.next()
-				if(tmp.userName == uName){
-					return true
-				}
-			}
-
-			return false
+			return users.contains(uName);
 		}
 
 		def findUser(uName: String): User = {
-			var itr = users.iterator
-			while(itr.hasNext){
-				var tmp = itr.next()
-				if(tmp.userName == uName){
-					return tmp
-				}
-			}
-			return null
+			return users.get(uName)
 		}
 
 		// Receive block for the server.
 		final def receive = LoggingReceive {
-			case CreateUser(uName, dob, email, pass) =>
-				if(checkUser(uName)){
-						sender ! -1+""
-					} else {
-						var newUserId = wCtr.addAndGet(1)
-						var newUser = new User(newUserId, uName, dob, email, pass)
-						users.add(newUser)
-						println("User");
-						// return the userId back
-						sender ! newUserId+""
-					}
-				
 
-			case LoginUser(uName, pass) =>
-				var user = findUser(uName)
-				if(user != null){
-					if(user.password == pass){
-						sender ! user
-					} else {
-						sender ! -1
-					}
-				} else {
-					sender ! -1
+			//Working cases
+			case AddFriendRequest(userId,friendId,key) =>
+				var friend = users.get(friendId)
+				var user = users.get(userId)
+				if(user!=null&&friend!=null){
+					friend.friendRequests.put(userId,key)
+					sender ! "SUCCESS"					
+				}else{
+					sender ! "FAILED"					
 				}
-				
 
+
+			case AcceptFriendRequest(userId,friendId,key) =>
+				var friend = users.get(friendId)
+				var user = users.get(userId)
+				if(user!=null&&friend!=null&&user.friendRequests.contains(friendId)){
+					friend.friends.put(userId,key)
+					user.friends.put(friendId,user.friendRequests.get(friendId))
+					user.friendRequests.remove(friendId)
+					sender ! "SUCCESS"					
+				}else{
+					sender ! "FAILED"					
+				}
+
+			case CreateUser(uName, dob, email, pass,key) =>
+				var newUserId = wCtr.addAndGet(1)
+				var newUser = new User(newUserId, uName, dob, email, pass,key)
+				users.put(newUserId+"",newUser)
+				println("User "+newUserId);
+				sender ! newUserId+""			
+
+
+			case SendUserProfile(userId) =>
+				println(userId);
+				rdCtr.addAndGet(1)
+				var obj = users.get(userId+"")
+				var userProfile = UserProfile(obj.userName, obj.dateOfBirth, obj.emailAdd)
+				var json = userProfile.toJson.toString
+				sender ! json
+			
+			//Not working cases
 			case AddPost(userId, time, msg) =>
 				var regexTags = "@[a-zA-Z0-9]+\\s*".r
 				var regexHashtags = "#[a-zA-Z0-9]+\\s*".r
@@ -230,7 +220,7 @@ object FacebookServer extends JsonFormats{
 
 				postStore.put(postId, newPost)
 
-				var friends = users.get(userId).friends.iterator()
+				var friends = users.get(userId).friends.keySet().iterator()
 				while(friends.hasNext()){
 					users.get(friends.next()).newsfeed.add(postId)
 				}
@@ -276,7 +266,7 @@ object FacebookServer extends JsonFormats{
 
 			case SendFriends(userId) =>
 				rdCtr.addAndGet(1)
-				var idList = users.get(userId).friends
+				var idList = users.get(userId).friends.keySet()
 				var friends: ArrayBuffer[sample] = ArrayBuffer.empty
 				var itr = idList.iterator()
 				while(itr.hasNext()){
@@ -285,16 +275,7 @@ object FacebookServer extends JsonFormats{
 				}
 				sender != friends.toList
 
-			case SendUserProfile(userId) =>
-				println(userId);
-				rdCtr.addAndGet(1)
-				var obj = users.get(userId)
-				var userProfile = UserProfile(obj.userName, obj.dateOfBirth, obj.emailAdd)
-				var json = userProfile.toJson.toString
-				sender ! json
-
 			case _ => println("ERROR : Server Receive : Invalid Case")
 		}
 	}
-
 }
