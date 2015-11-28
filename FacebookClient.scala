@@ -31,7 +31,7 @@
 // import spray.json.pimpAny
 // import spray.json.pimpString
 
-// object Project4Client extends JsonFormats {
+// object FacebookClient extends JsonFormats {
 //   var ipAddress: String = ""
 //   var initPort = 8080
 //   var noOfPorts = 0

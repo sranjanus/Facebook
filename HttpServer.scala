@@ -122,13 +122,17 @@ object HttpServer extends JsonFormats {
 				var id = path.split("/").last.toInt
 				println(id);
 				var client = sender
-				val result = (server ? FacebookServer.Server.SendUserProfile(id)).mapTo[List[UserProfile]]
+				val result = (server ? FacebookServer.Server.SendUserProfile(id)).mapTo[String]
 				println("-- "+id);
 				result onSuccess {
-					case result: List[UserProfile] =>
-						println(result.toJson.toString);
-						val body = HttpEntity(ContentTypes.`application/json`, result.toJson.toString)
+					case result =>
+						println(result);
+						val body = HttpEntity(ContentTypes.`application/json`, result)
 						client ! HttpResponse(entity = body)
+				}
+				result onComplete{
+					case result => 
+						println(result); 
 				}
 
 			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/friends" =>

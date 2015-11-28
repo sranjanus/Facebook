@@ -18,7 +18,7 @@ import akka.actor.actorRef2Scala
 import akka.event.LoggingReceive
 import akka.routing.SmallestMailboxPool
 
-object FacebookServer {
+object FacebookServer extends JsonFormats{
 	case class sample(id: Int, name: String, noOfPosts: Int, friendsCount: Int) extends java.io.Serializable
 
 	class User (id: Int, uName: String, dob: String, email: String, pass: String) {
@@ -289,9 +289,9 @@ object FacebookServer {
 				println(userId);
 				rdCtr.addAndGet(1)
 				var obj = users.get(userId)
-				var profile: ArrayBuffer[sample] = ArrayBuffer.empty
-				profile += sample(obj.userId, obj.userName, obj.timeline.size(), obj.friends.size())
-				sender != profile.toList
+				var userProfile = UserProfile(obj.userName, obj.dateOfBirth, obj.emailAdd)
+				var json = userProfile.toJson.toString
+				sender ! json
 
 			case _ => println("ERROR : Server Receive : Invalid Case")
 		}
