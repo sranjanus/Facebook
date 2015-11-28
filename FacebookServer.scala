@@ -65,7 +65,83 @@ object FacebookServer {
 	def main(args: Array[String]){
 		// create an actor system
 		val system = ActorSystem("FacebookServer", ConfigFactory.load(ConfigFactory.parseString("""{ "akka" : { "actor" : { "provider" : "akka.remote.RemoteActorRefProvider" }, "remote" : { "enabled-transports" : [ "akka.remote.netty.tcp" ], "netty" : { "tcp" : { "port" : 12000 , "maximum-frame-size" : 12800000b } } } } } """)))		
+	
+		val watcher = system.actorOf(Props(new Watcher()), name = "Watcher")
+
+    	watcher ! FacebookServer.Watcher.Init(args(0).toInt)
+
 	}
+
+	object Watcher {
+    case class Init(noOfUsers: Int)
+    case object Time
+  }
+
+  class Watcher extends Actor {
+    import Watcher._
+    import context._
+
+    // scheduler to count no. of tweets every 5 seconds.
+    var cancellable = system.scheduler.schedule(0 seconds, 5000 milliseconds, self, Time)
+
+    // Start a router with 30 Actors in the Server.
+    var cores = (Runtime.getRuntime().availableProcessors() * 1.5).toInt
+    val router = context.actorOf(Props[Server].withRouter(SmallestMailboxPool(cores)), name = "Router")
+    // Watch the router. It calls the terminate sequence when router is terminated.
+    context.watch(router)
+
+    def Initialize(noOfUsers: Int) {
+      // // create a distribution for followers per user.
+      // var FollowersPerUser = pdf.exponential(1.0 / 208.0).sample(noOfUsers).map(_.toInt)
+      // FollowersPerUser = FollowersPerUser.sortBy(a => -a)
+      // // create a distribution for followings per user.
+      // var FollowingPerUser = pdf.exponential(1.0 / 238.0).sample(noOfUsers).map(_.toInt)
+      // FollowingPerUser = FollowingPerUser.sortBy(a => a)
+
+      // for (i <- 0 to noOfUsers - 1) {
+      //   users.add(i, new User(i))
+      // }
+
+      // // assign followers to each user.
+      // for (j <- 0 to noOfUsers - 1) {
+      //   var k = -1
+      //   // construct list of followers.
+      //   while (FollowingPerUser(j) > 0 && k < noOfUsers) {
+      //     k += 1
+      //     if (k < noOfUsers && FollowersPerUser(k) > 0) {
+      //       users.get(j).following.add(k)
+      //       users.get(k).followers.add(j)
+      //       FollowingPerUser(j) -= 1
+      //       FollowersPerUser(k) -= 1
+      //     }
+      //   }
+      // }
+      println("Server started")
+    }
+
+    // Receive block for the Watcher.
+    final def receive = LoggingReceive {
+      case Init(noOfUsers) =>
+        Initialize(noOfUsers)
+        System.gc()
+
+      case Time =>
+        var tmp1 = wCtr.get() - wTPS.sum
+        wTPS += (tmp1)
+        var tmp2 = rdCtr.get() - rdTPS.sum
+        rdTPS += (tmp2)
+        println(tmp1 + " , " + tmp2)
+
+      case Terminated(ref) =>
+        if (ref == router) {
+          println(wTPS)
+          println(rdTPS)
+          system.shutdown
+        }
+
+      	case _ => println("FAILED HERE")
+    	}
+  	}
 
 	object Server {
 		case class CreateUser(uName: String, dob: String, email: String, pass: String)
@@ -110,14 +186,14 @@ object FacebookServer {
 		final def receive = LoggingReceive {
 			case CreateUser(uName, dob, email, pass) =>
 				if(checkUser(uName)){
-						sender ! -1
+						sender ! -1+""
 					} else {
 						var newUserId = wCtr.addAndGet(1)
 						var newUser = new User(newUserId, uName, dob, email, pass)
 						users.add(newUser)
-
+						println("User");
 						// return the userId back
-						sender ! newUser
+						sender ! newUserId+""
 					}
 				
 
@@ -210,6 +286,7 @@ object FacebookServer {
 				sender != friends.toList
 
 			case SendUserProfile(userId) =>
+				println(userId);
 				rdCtr.addAndGet(1)
 				var obj = users.get(userId)
 				var profile: ArrayBuffer[sample] = ArrayBuffer.empty

@@ -1,268 +1,296 @@
-package com.FacebookApp
+// package com.FacebookApp
 
-import scala.collection.mutable.ArrayBuffer
-import scala.concurrent.Future
-import scala.concurrent.duration.DurationInt
-import scala.util.Failure
-import scala.util.Random
-import scala.util.Success
+// import scala.collection.mutable.ArrayBuffer
+// import scala.concurrent.Future
+// import scala.concurrent.duration.DurationInt
+// import scala.util.Failure
+// import scala.util.Random
+// import scala.util.Success
 
-import com.typesafe.config.ConfigFactory
+// import com.typesafe.config.ConfigFactory
 
-import akka.actor.Actor
-import akka.actor.ActorRef
-import akka.actor.ActorSystem
-import akka.actor.Cancellable
-import akka.actor.Props
-import akka.actor.Terminated
-import akka.actor.actorRef2Scala
-import akka.event.LoggingReceive
-import spray.client.pipelining.WithTransformerConcatenation
-import spray.client.pipelining.sendReceive
-import spray.client.pipelining.sendReceive$default$3
-import spray.client.pipelining.unmarshal
-import spray.http.ContentTypes
-import spray.http.HttpEntity
-import spray.http.HttpMethods.GET
-import spray.http.HttpMethods.POST
-import spray.http.HttpRequest
-import spray.http.HttpResponse
-import spray.http.Uri.apply
-import spray.json.pimpAny
-import spray.json.pimpString
+// import akka.actor.Actor
+// import akka.actor.ActorRef
+// import akka.actor.ActorSystem
+// import akka.actor.Cancellable
+// import akka.actor.Props
+// import akka.actor.Terminated
+// import akka.actor.actorRef2Scala
+// import akka.event.LoggingReceive
+// import spray.client.pipelining.WithTransformerConcatenation
+// import spray.client.pipelining.sendReceive
+// import spray.client.pipelining.sendReceive$default$3
+// import spray.client.pipelining.unmarshal
+// import spray.http.ContentTypes
+// import spray.http.HttpEntity
+// import spray.http.HttpMethods.GET
+// import spray.http.HttpMethods.POST
+// import spray.http.HttpRequest
+// import spray.http.HttpResponse
+// import spray.http.Uri.apply
+// import spray.json.pimpAny
+// import spray.json.pimpString
 
-object FacebookClient extends JsonFormats {
-	var Ip: String = ""
-	var port = 8080
+// object Project4Client extends JsonFormats {
+//   var ipAddress: String = ""
+//   var initPort = 8080
+//   var noOfPorts = 0
+//   def main(args: Array[String]) {
+//     // exit if arguments not passed as command line param.
+//     if (args.length < 4) {
+//       println("INVALID NO OF ARGS.  USAGE :")
+//       System.exit(1)
+//     } else if (args.length == 4) {
+//       var avgTweetsPerSecond = args(0).toInt
+//       var noOfUsers = args(1).toInt
+//       ipAddress = args(2)
+//       noOfPorts = args(3).toInt
 
-	def main(args: Array[String]) {
-		// exti if arguments not passed as command line param
-		if(args.length < 2){
-			println("Invalid no. of arguments")
-			System.exit(1)
-		} else {
-			Ip = args(0)
-			port = args(1).toInt
+//       // create actor system and a watcher actor.
+//       val system = ActorSystem("TwitterClients", ConfigFactory.load(ConfigFactory.parseString("""{ "akka" : { "actor" : { "provider" : "akka.remote.RemoteActorRefProvider" }, "remote" : { "enabled-transports" : [ "akka.remote.netty.tcp" ], "netty" : { "tcp" : { "port" : 13000 , "maximum-frame-size" : 12800000b } } } } } """)))
+//       // creates a watcher Actor.
+//       val watcher = system.actorOf(Props(new Watcher(noOfUsers, avgTweetsPerSecond)), name = "Watcher")
+//     }
+//   }
+//   object Watcher {
+//     case class Terminate(node: ActorRef)
+//   }
 
-			println("Ip = " + Ip)
-			println("port = " + port)
+//   class Watcher(noOfUsers: Int, avgTweetsPerSecond: Int) extends Actor {
+//     import context._
+//     import Watcher._
 
-			// create actor system
-			val system = ActorSystem("FacebookClient", ConfigFactory.load(ConfigFactory.parseString("""{ "akka" : { "actor" : { "provider" : "akka.remote.RemoteActorRefProvider" }, "remote" : { "enabled-transports" : [ "akka.remote.netty.tcp" ], "netty" : { "tcp" : { "port" : 13000 , "maximum-frame-size" : 12800000b } } } } } """)))
+//     val pdf = new PDF()
+//     val rnd = new Random
 
-			var node = system.actorOf(Props(new Client()), name = "1")
+//     // 307 => mean (avg tweets per user).	sample(size) => size is the no of Users.
+//     var TweetsPerUser = pdf.exponential(1.0 / 307.0).sample(noOfUsers).map(_.toInt)
+//     TweetsPerUser = TweetsPerUser.sortBy(a => a)
 
-			// Intialize the client with info 
-			node ! Client.Init(port)
-			node ! Client.StartClient
+//     // calculate duration required to produce given tweets at given rate.
+//     var duration = TweetsPerUser.sum / avgTweetsPerSecond
+//     println(duration)
 
-		}
-	}
+//     // get times for 5% of duration. Duration is relative -> 1 to N
+//     var percent5 = (duration * 0.05).toInt
+//     var indexes = ArrayBuffer.empty[Int]
+//     for (i <- 1 to percent5) {
+//       var tmp = rnd.nextInt(duration)
+//       while (indexes.contains(tmp)) {
+//         tmp = rnd.nextInt(duration)
+//       }
+//       indexes += tmp
+//     }
 
-	object Client {
-		case class Init(portNo: Int)
-		case object AccountCreated
-		case object LoggedIn
-		case object StartClient
-		case object ContinueClient
-		case object Message
-		case object SearchUser
-		case object AddFriend
-		case object Post
-		case object GetMessages
-		case object GetNewsfeed
-		case object GetTimeline
-		case object GetFriends
-		case object GetUserProfile
-		case object Stop
-	}
+//     // keep track of Client Actors.
+//     var nodesArr = ArrayBuffer.empty[ActorRef]
+//     // start running after 10 seconds from currentTime.
+//     var absoluteStartTime = System.currentTimeMillis() + (10 * 1000)
+//     // create given number of clients and initialize.
+//     for (i <- 0 to noOfUsers - 1) {
+//       var port = initPort + rnd.nextInt(noOfPorts) * 4
+//       var node = actorOf(Props(new Client()), name = "" + i)
+//       // Initialize Clients with info like #Tweets, duration of tweets, start Time, router address. 
+//       node ! Client.Init(TweetsPerUser(i), duration, indexes, absoluteStartTime, port)
+//       nodesArr += node
+//       context.watch(node)
+//     }
 
-	class Client() extends Actor {
-		import context._
-		import Client._
+//     var startTime = System.currentTimeMillis()
+//     // end of constructor
 
-		var myInfo: UserInfo = new UserInfo(-1, "", "", "", "", -1, -1)
-		var port = 0
+//     // Receive block for the Watcher.
+//     final def receive = LoggingReceive {
+//       case Terminated(node) =>
+//         nodesArr -= node
+//         val finalTime = System.currentTimeMillis()
+//         // when all actors are down, shutdown the system.
+//         if (nodesArr.isEmpty) {
+//           println("Final:" + (finalTime - startTime))
+//           context.system.shutdown
+//         }
 
-		def CreateAccount(){
-			println("Enter Information to create an account------------------------------------------------")
-			println("Email : ")
-			var email = readLine()
-			println("Date of Birth : (MM/DD/YYYY)")
-			var dob = readLine()
-			println("Username : ")
-			var uName = readLine()
-			println("Password : ")
-			var pass = readLine()
+//       case _ => println("FAILED HERE")
+//     }
+//   }
 
-			val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
-          	val request = HttpRequest(method = POST, uri = "http://" + Ip + ":" + port + "/createAccount", entity = HttpEntity(ContentTypes.`application/json`, UserInfo(-1, uName, dob, email, pass, -1, -1).toJson.toString))
-          	val responseFuture: Future[HttpResponse] = pipeline(request)
-          	responseFuture onComplete {
-            	case Success(result) =>
-            		myInfo = result.entity.data.asString.parseJson.convertTo[UserInfo]
-            		self ! AccountCreated
-            	case Failure(error) =>
-            		println("Error: CreateAccount: Account Not Created!")
-          	}
-		}
+//   class Event(relative: Int = 0, tweets: Int = 0) {
+//     var relativeTime = relative
+//     var absTime: Long = 0
+//     var noOfTweets = tweets
+//   }
 
-		def Login(){
-			println("Log in-------------------------------------------------------------------------------")
-			println("Username : ")
-			var uName = readLine()
-			println("Password : ")
-			var pass = readLine()
+//   object Client {
+//     case class Init(avgNoOfTweets: Int, duration: Int, indexes: ArrayBuffer[Int], absoluteTime: Long, port: Int)
+//     case class Tweet(noOfTweets: Int)
+//     case class Msg(rId: Int)
+//     case object GetMessages
+//     case object GetHomeTimeline
+//     case object GetUserTimeline
+//     case object GetFollowers
+//     case object GetFollowing
+//     case object GetMentions
+//     case object Stop
+//   }
 
-			val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
-          	val request = HttpRequest(method = POST, uri = "http://" + Ip + ":" + port + "/login", entity = HttpEntity(ContentTypes.`application/json`, UserInfo(-1, uName, "", "", pass, -1, -1).toJson.toString))
-          	val responseFuture: Future[HttpResponse] = pipeline(request)
-          	responseFuture onComplete {
-            	case Success(result) =>
-            		myInfo = result.entity.data.asString.parseJson.convertTo[UserInfo]
-            		self ! LoggedIn
-            	case Failure(error) =>
-            		println("Error: Log In: Failed!")
-          	} 
-		}
+//   class Client(implicit system: ActorSystem) extends Actor {
+//     import context._
+//     import Client._
 
-		def FetchNewsfeed(){
-			val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
-        	val request = HttpRequest(method = GET, uri = "http://" + Ip + ":" + port + "/newsfeed/" + myInfo.uid)
-        	val responseFuture: Future[HttpResponse] = pipeline(request)
-        	responseFuture onComplete {
-          		case Success(result) =>
-            		val posts = result.entity.data.asString.parseJson.convertTo[List[FacebookServer.Posts]]
+//     /* Constructor Started */
+//     var events = ArrayBuffer.empty[Event]
+//     var id = self.path.name.toInt
+//     val rand = new Random()
+//     var cancellable: Cancellable = null
+//     var ctr = 0
+//     var endTime: Long = 0
+//     var port = 0
+//     /* Constructor Ended */
 
-            		// To do: Show the posts	
+//     def Initialize(avgNoOfTweets: Int, duration: Int, indexes: ArrayBuffer[Int]) {
+//       val pdf = new PDF()
 
-          		case Failure(error) =>
-			}
-		}
+//       // Generate Timeline for tweets for given duration. Std. Deviation = Mean/4 (25%),	Mean = TweetsPerUser(i)
+//       var mean = avgNoOfTweets / duration.toDouble
+//       var tweetspersecond = pdf.gaussian.map(_ * (mean / 4) + mean).sample(duration).map(a => Math.round(a).toInt)
+//       var skewedRate = tweetspersecond.sortBy(a => a).takeRight(indexes.length).map(_ * 2) // double value of 10% of largest values to simulate peaks.
+//       for (j <- 0 to indexes.length - 1) {
+//         tweetspersecond(indexes(j)) = skewedRate(j)
+//       }
+//       for (j <- 0 to duration - 1) {
+//         events += new Event(j, tweetspersecond(j))
+//       }
+//       events = events.filter(a => a.noOfTweets > 0).sortBy(a => a.relativeTime)
 
-		def PostToTimeline(){
-			println("Post to Timeline----------------------------------------------------------------------")
-			println("Enter a message to post")
-			var postMsg = readLine()
-			
-			val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
-			val request = HttpRequest(method = POST, uri = "http://" + Ip + ":" + port + "/login", entity = HttpEntity(ContentTypes.`application/json`, SendPost(myInfo.uid, System.currentTimeMillis(), postMsg).toJson.toString))
-			val responseFuture: Future[HttpResponse] = pipeline(request)
-			responseFuture onComplete {
-				case Success(result) =>
-					val posts = result.entity.data.asString.parseJson.convertTo[List[FacebookServer.Posts]]
+//       endTime = System.currentTimeMillis() + (duration * 1000)
+//     }
 
-					// To do: Show the newsfeed
+//     def setAbsoluteTime(baseTime: Long) {
+//       var tmp = events.size
+//       for (j <- 0 to tmp - 1) {
+//         events(j).absTime = baseTime + (events(j).relativeTime * 1000)
+//       }
+//     }
 
-				case Failure(error) => 
-			}
-		}
+//     def runEvent() {
+//       if (!events.isEmpty) {
+//         var tmp = events.head
+//         var relative = (tmp.absTime - System.currentTimeMillis()).toInt
+//         if (relative < 0) {
+//           relative = 0
+//         }
+//         events.trimStart(1)
+//         system.scheduler.scheduleOnce(relative milliseconds, self, Tweet(tmp.noOfTweets))
+//       } else {
+//         var relative = (endTime - System.currentTimeMillis()).toInt
+//         if (relative < 0) {
+//           relative = 0
+//         }
+//         system.scheduler.scheduleOnce(relative milliseconds, self, Stop)
+//       }
+//     }
 
-		def Message(){
-			println("Send a message------------------------------------------------------------------------")
-			println("Enter the Id of the Recepient")
-			var recepId = readInt()
-			println("Enter a message")
-			var message = readLine()
+//     def generateTweet(): String = {
+//       return rand.nextString(rand.nextInt(140))
+//     }
 
-			val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
-			val request = HttpRequest(method = POST, uri = "http://" + Ip + ":" + port + "/message", entity = HttpEntity(ContentTypes.`application/json`, SendMsg(myInfo.uid, System.currentTimeMillis(), message, recepId).toJson.toString))
-			val responseFuture: Future[String] = pipeline(request)
-			responseFuture onComplete {
-				case Success(result) =>
-					println("Notificaiton : Client : Message Sent!");
-				case Failure(error) =>
-			}
-		}
+//     // Receive block when in Initializing State before Node is Alive.
+//     final def receive = LoggingReceive {
+//       case Init(avgNoOfTweets, duration, indexes, absoluteTime, portNo) =>
+//         Initialize(avgNoOfTweets, duration, indexes)
+//         port = portNo
+//         setAbsoluteTime(absoluteTime)
+//         var relative = (absoluteTime - System.currentTimeMillis()).toInt
+//         cancellable = system.scheduler.schedule(relative milliseconds, 5 second, self, GetHomeTimeline)
+//         runEvent()
 
-		def SearchUser(){
+//       case Tweet(noOfTweets: Int) =>
+//         for (j <- 1 to noOfTweets) {
+//           val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
+//           val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/tweet", entity = HttpEntity(ContentTypes.`application/json`, SendTweet(id, System.currentTimeMillis(), generateTweet()).toJson.toString))
+//           val responseFuture: Future[String] = pipeline(request)
+//           responseFuture onComplete {
+//             case Success(str) =>
+//             case Failure(error) =>
+//           }
+//         }
+//         runEvent()
 
-		}
+//       case Msg(rId: Int) =>
+//         val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
+//         val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/msg", entity = HttpEntity(ContentTypes.`application/json`, SendMsg(id, System.currentTimeMillis(), generateTweet(), rId).toJson.toString))
+//         val responseFuture: Future[String] = pipeline(request)
+//         responseFuture onComplete {
+//           case Success(str) =>
+//           case Failure(error) =>
+//         }
 
-		def FetchMessages(){
+//       case GetMessages =>
+//         val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
+//         val request = HttpRequest(method = GET, uri = "http://" + ipAddress + ":" + port + "/msg/" + id)
+//         val responseFuture: Future[HttpResponse] = pipeline(request)
+//         responseFuture onComplete {
+//           case Success(result) =>
+//             val tweet = result.entity.data.asString.parseJson.convertTo[List[Project4Server.Messages]]
+//           case Failure(error) =>
+//         }
 
-		}
+//       case GetHomeTimeline =>
+//         val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
+//         val request = HttpRequest(method = GET, uri = "http://" + ipAddress + ":" + port + "/home_timeline/" + id)
+//         val responseFuture: Future[HttpResponse] = pipeline(request)
+//         responseFuture onComplete {
+//           case Success(result) =>
+//             val tweet = result.entity.data.asString.parseJson.convertTo[List[Project4Server.Tweets]]
+//           case Failure(error) =>
+//         }
 
-		def ViewTimeline(){
+//       case GetUserTimeline =>
+//         val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
+//         val request = HttpRequest(method = GET, uri = "http://" + ipAddress + ":" + port + "/user_timeline/" + id)
+//         val responseFuture: Future[HttpResponse] = pipeline(request)
+//         responseFuture onComplete {
+//           case Success(result) =>
+//             val tweet = result.entity.data.asString.parseJson.convertTo[List[Project4Server.Tweets]]
+//           case Failure(error) =>
+//         }
 
-		}
+//       case GetFollowers =>
+//         val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
+//         val request = HttpRequest(method = GET, uri = "http://" + ipAddress + ":" + port + "/followers/" + id)
+//         val responseFuture: Future[HttpResponse] = pipeline(request)
+//         responseFuture onComplete {
+//           case Success(result) =>
+//             val followers = result.entity.data.asString.parseJson.convertTo[List[UserProfile]]
+//           case Failure(error) =>
+//         }
 
-		def ViewAlbums(){
+//       case GetFollowing =>
+//         val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
+//         val request = HttpRequest(method = GET, uri = "http://" + ipAddress + ":" + port + "/following/" + id)
+//         val responseFuture: Future[HttpResponse] = pipeline(request)
+//         responseFuture onComplete {
+//           case Success(result) =>
+//             val followers = result.entity.data.asString.parseJson.convertTo[List[UserProfile]]
+//           case Failure(error) =>
+//         }
 
-		}
+//       case GetMentions =>
+//         val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
+//         val request = HttpRequest(method = GET, uri = "http://" + ipAddress + ":" + port + "/mentions/" + id)
+//         val responseFuture: Future[HttpResponse] = pipeline(request)
+//         responseFuture onComplete {
+//           case Success(result) =>
+//             val tweet = result.entity.data.asString.parseJson.convertTo[List[Project4Server.Tweets]]
+//           case Failure(error) =>
+//         }
 
-		def CreateAlbum(){
+//       case Stop =>
+//         cancellable.cancel
+//         context.stop(self)
 
-		}
+//       case _ => println("FAILED")
 
-		def AddPhotos(){
-
-		}
-
-		final def receive = LoggingReceive {
-			case Init(portNo) =>
-				port = portNo
-
-			case StartClient =>
-				println("Options : ------------------------------------------------------")
-				println("1. Create a new account")
-				println("2. Login")
-				println("Please enter one of the two options to continue.")
-
-				var opt = readInt()
-				if(opt == 1){
-					CreateAccount()
-				} else if(opt == 2){
-					Login()
-				} else {
-					println("Error: Client: Invalid User Request!")
-				}
-
-			case ContinueClient =>
-				println("Options : ---------------------------------------------------")
-				println("1. View Newsfeed")
-				println("2. Search User")
-				println("3. Get Messages")
-				println("4. View Timeline")
-				println("5. View Albums")
-				println("6. Create New Album")
-				println("7. Add Photos")
-				println("8. Post to Timeline")
-
-				var opt = readInt()
-				if(opt == 1){
-						FetchNewsfeed()
-					} else if(opt == 2){
-							SearchUser()
-						} else if(opt == 3){
-								FetchMessages()
-							} else if(opt == 4){
-									ViewTimeline()
-								} else if(opt == 5){
-										ViewAlbums()
-									} else if(opt == 6){
-											CreateAlbum()
-										} else if(opt == 7){
-												AddPhotos()
-											} else if(opt == 8) {
-													PostToTimeline()
-												} else {
-													println("Error: Client: Invalid User Request!")
-													}
-
-			case AccountCreated =>
-				println("Welcome " + myInfo.uname + "!")
-				println()
-				self ! ContinueClient
-
-			case LoggedIn =>
-				println("Welcome back " + myInfo.uname + "!")
-				println()
-				self ! ContinueClient
-
-			case _ =>
-				println("Error: Client : Invalid Message Received!") 
-				
-		} 
-	}
-}
+//     }
+//   }
+// }

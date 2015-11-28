@@ -27,6 +27,8 @@ import spray.http.StatusCode.int2StatusCode
 import spray.http.Uri
 import spray.json.pimpAny
 import spray.json.pimpString
+import spray.http.ContentTypes
+
 
 object HttpServer extends JsonFormats {
 	def main(args: Array[String]){
@@ -58,9 +60,11 @@ object HttpServer extends JsonFormats {
 				val info = entity.data.asString.parseJson.convertTo[UserInfo]
 				var client = sender
 				val result = (server ? FacebookServer.Server.CreateUser(info.uname, info.dob, info.email, info.pass)).mapTo[String]
-				result onSuccess {
+				result onComplete {
 					case result =>
-						client ! HttpResponse(entity = result)
+						println(result)
+						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
+					
 				}
 
 			case HttpRequest(POST, Uri.Path("/login"), _, entity: HttpEntity.NonEmpty, _) =>
@@ -116,10 +120,13 @@ object HttpServer extends JsonFormats {
 
 			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/user" =>
 				var id = path.split("/").last.toInt
+				println(id);
 				var client = sender
 				val result = (server ? FacebookServer.Server.SendUserProfile(id)).mapTo[List[UserProfile]]
+				println("-- "+id);
 				result onSuccess {
 					case result: List[UserProfile] =>
+						println(result.toJson.toString);
 						val body = HttpEntity(ContentTypes.`application/json`, result.toJson.toString)
 						client ! HttpResponse(entity = body)
 				}
