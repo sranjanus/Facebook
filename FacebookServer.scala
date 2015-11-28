@@ -37,21 +37,18 @@ object FacebookServer extends JsonFormats{
 	}
 
 	class Page(pid:String,name:String,details:String,createrId:String){
-		var pid = pid
-		var name = name
-		var details = details
-		var createrId = createrId
 		var posts: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
+		var likes: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
 	}
 
-
-	class Posts(pid: String, id: Int, post: String, time: Long, tagList: ArrayBuffer[String] = ArrayBuffer.empty, hashtagList: ArrayBuffer[String] = ArrayBuffer.empty){
+	class Posts(pid: String, id: String, post: String, time: Long, tagList: ArrayBuffer[String] = ArrayBuffer.empty, hashtagList: ArrayBuffer[String] = ArrayBuffer.empty){
 		var authorId = id
 		var message = post
 		var timeStamp: Long = time
 		var postId = pid
 		var tags = tagList
 		var hashtags = hashtagList
+		var likes: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
 	}
 
 	class Messages(sid: Int, rid: Int, mid: String, msg: String, time: Long){
@@ -73,7 +70,8 @@ object FacebookServer extends JsonFormats{
 	var users: ConcurrentHashMap[String, User] = new ConcurrentHashMap()
 	var postStore: ConcurrentHashMap[String, Posts] = new ConcurrentHashMap()
 	var msgStore: ConcurrentHashMap[String, Messages] = new ConcurrentHashMap()
-
+	var pageStore: ConcurrentHashMap[String, Messages] = new ConcurrentHashMap()
+	
 	def main(args: Array[String]){
 		// create an actor system
 		val system = ActorSystem("FacebookServer", ConfigFactory.load(ConfigFactory.parseString("""{ "akka" : { "actor" : { "provider" : "akka.remote.RemoteActorRefProvider" }, "remote" : { "enabled-transports" : [ "akka.remote.netty.tcp" ], "netty" : { "tcp" : { "port" : 12000 , "maximum-frame-size" : 12800000b } } } } } """)))		
@@ -85,9 +83,9 @@ object FacebookServer extends JsonFormats{
 	}
 
 	object Watcher {
-    case object Init
-    case object Time
-  }
+    	case object Init
+    	case object Time
+  	}
 
   class Watcher extends Actor {
     import Watcher._
@@ -133,7 +131,7 @@ object FacebookServer extends JsonFormats{
 	object Server {
 		case class CreateUser(uName: String, dob: String, email: String, pass: String,key:String)
 		case class LoginUser(uName: String, pass: String)
-		case class AddPost(userId: Int, time: Long, msg: String)
+		case class AddPost(userId: String, time: Long, msg: String)
 		case class AddMsg(sId: Int, time: Long, msg: String, rId: Int)
 		case class SendMessages(userId: Int)
 		case class SendNewsfeed(userId: Int)
@@ -199,7 +197,28 @@ object FacebookServer extends JsonFormats{
 				var json = userProfile.toJson.toString
 				sender ! json
 			
-			//Not working cases
+			case SendNewsfeed(userId) =>
+				rdCtr.addAndGet(1)
+				var postIds = users.get(userId+"").newsfeed
+				var posts: ArrayBuffer[GetPost] = ArrayBuffer.empty
+				var itr = postIds.iterator()
+				while(itr.hasNext()) {
+					var temp = postStore.get(itr.next())
+					posts += GetPost(temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
+				}
+				sender ! posts.toList.toJson.toString
+
+			case SendTimeline(userId) =>
+				rdCtr.addAndGet(1)
+				var postIds = users.get(userId+"").timeline
+				var posts: ArrayBuffer[GetPost] = ArrayBuffer.empty
+				var itr = postIds.iterator()
+				while(itr.hasNext()) {
+					var temp = postStore.get(itr.next())
+					posts += GetPost(temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
+				}
+				sender ! posts.toList.toJson.toString
+
 			case AddPost(userId, time, msg) =>
 				var regexTags = "@[a-zA-Z0-9]+\\s*".r
 				var regexHashtags = "#[a-zA-Z0-9]+\\s*".r
@@ -227,6 +246,7 @@ object FacebookServer extends JsonFormats{
 				users.get(userId).timeline.add(postId)
 				sender ! postId
 
+			//Not working cases
 			case AddMsg(sId, time, msg, rId) =>
 				var mid = mCtr.addAndGet(1).toString
 				var newMsg = new Messages(sId, rId, mid, msg, time)
@@ -236,7 +256,7 @@ object FacebookServer extends JsonFormats{
 
 			case SendMessages(userId) =>
 				rdCtr.addAndGet(1)
-				var msgIds = users.get(userId).messages
+				var msgIds = users.get(userId+"").messages
 				var msgs: ArrayBuffer[Messages] = ArrayBuffer.empty
 				var itr = msgIds.iterator
 				while (itr.hasNext) {
@@ -244,25 +264,7 @@ object FacebookServer extends JsonFormats{
 				}
 				sender ! msgs.toList
 
-			case SendNewsfeed(userId) =>
-				rdCtr.addAndGet(1)
-				var postIds = users.get(userId).newsfeed
-				var posts: ArrayBuffer[Posts] = ArrayBuffer.empty
-				var itr = postIds.iterator
-				while(itr.hasNext()) {
-					posts += postStore.get(itr.next())
-				}
-				sender ! posts.toList
 
-			case SendTimeline(userId) =>
-				rdCtr.addAndGet(1)
-				var postIds = users.get(userId).timeline
-				var posts: ArrayBuffer[Posts] = ArrayBuffer.empty
-				var itr = postIds.iterator()
-				while(itr.hasNext()) {
-					posts += postStore.get(itr.next())
-				}
-				sender ! posts.toList
 
 			case SendFriends(userId) =>
 				rdCtr.addAndGet(1)

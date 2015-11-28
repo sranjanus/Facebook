@@ -13,21 +13,25 @@ import spray.json.JsonFormat
 import spray.json.pimpAny
 
 trait JsonFormats extends DefaultJsonProtocol {
-  case class SendPost(userId: Int, time: Long, msg: String)
+  case class SendPost(userId: String, time: Long, msg: String)
   case class UserProfile(uname: String, dob: String, email: String)
   case class UserInfo(uid: Int, uname: String, dob: String, email: String, pass: String, postCount: Int, friendsCount: Int, key: String)
   case class SendMsg(senderId: Int, time: Long, msg: String, recepientId: Int)
   case class SendFriendRequest(senderId: String, recepientId: String,key:String)
+  case class GetPost(userId: String, time: Long, msg: String,likes:Int)
+
+
 
   implicit val postFormat = jsonFormat3(SendPost)
   implicit val userProfileFormat = jsonFormat3(UserProfile)
   implicit val userInfoFormat = jsonFormat8(UserInfo)
   implicit val msgFormat = jsonFormat4(SendMsg)
   implicit val friendRequestFormat = jsonFormat3(SendFriendRequest)
+  implicit val getPostFormat = jsonFormat4(GetPost)
 
   implicit object TimelineJsonFormat extends JsonFormat[FacebookServer.Posts] {
     def write(c: FacebookServer.Posts) = JsObject(
-      "authorId" -> JsNumber(c.authorId),
+      "authorId" -> JsString(c.authorId),
       "message" -> JsString(c.message),
       "timeStamp" -> JsString(c.timeStamp.toString),
       "postId" -> JsString(c.postId),
@@ -35,8 +39,8 @@ trait JsonFormats extends DefaultJsonProtocol {
       "hashtags" -> JsArray(c.hashtags.map(_.toJson).toVector))
     def read(value: JsValue) = {
       value.asJsObject.getFields("postId", "authorId", "message", "timeStamp", "tags", "hashtags") match {
-        case Seq(JsString(postId), JsNumber(authorId), JsString(message), JsString(timeStamp), JsArray(tags), JsArray(hashtags)) =>
-          new FacebookServer.Posts(postId, authorId.toInt, message, timeStamp.toLong, tags.map(_.convertTo[String]).to[ArrayBuffer], hashtags.map(_.convertTo[String]).to[ArrayBuffer])
+        case Seq(JsString(postId), JsString(authorId), JsString(message), JsString(timeStamp), JsArray(tags), JsArray(hashtags)) =>
+          new FacebookServer.Posts(postId, authorId, message, timeStamp.toLong, tags.map(_.convertTo[String]).to[ArrayBuffer], hashtags.map(_.convertTo[String]).to[ArrayBuffer])
         case _ => throw new DeserializationException("Posts expected")
       }
     }

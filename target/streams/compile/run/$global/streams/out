@@ -1,4 +1,4 @@
-[0m[[0minfo[0m] [0mRunning com.FacebookApp.FacebookServer 1[0m
+[0m[[0minfo[0m] [0mRunning com.FacebookApp.HttpServer 10.137.110.39 1[0m
 [0m[[0mdebug[0m] [0mWaiting for threads to exit or System.exit to be called.[0m
 [0m[[0mdebug[0m] [0m  Classpath:[0m
 [0m[[0mdebug[0m] [0m	/Users/vipulmittal/Documents/fall-2015/dos/final_project/Facebook/target/scala-2.11/facebookapp_2.11-1.0.jar[0m
@@ -25,4 +25,6 @@
 [0m[[0mdebug[0m] [0m	/Users/vipulmittal/.ivy2/cache/commons-lang/commons-lang/jars/commons-lang-2.6.jar[0m
 [0m[[0mdebug[0m] [0mWaiting for thread run-main-0 to terminate.[0m
 [0m[[0mdebug[0m] [0m	Thread run-main-0 exited.[0m
-[0m[[0mdebug[0m] [0mWaiting for thread New I/O server boss #6 to terminate.[0m
+[0m[[0mdebug[0m] [0mWaiting for thread HttpServer-akka.actor.default-dispatcher-3 to terminate.[0m
+[0m[[0mdebug[0m] [0m	Thread HttpServer-akka.actor.default-dispatcher-3 exited.[0m
+[0m[[0mdebug[0m] [0mWaiting for thread New I/O worker #5 to terminate.[0m

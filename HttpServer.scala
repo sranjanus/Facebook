@@ -151,10 +151,10 @@ object HttpServer extends JsonFormats {
 			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/timeline" =>
 				var id = path.split("/").last.toInt
 				var client = sender
-				val result = (server ? FacebookServer.Server.SendTimeline(id)).mapTo[List[FacebookServer.Posts]]
+				val result = (server ? FacebookServer.Server.SendTimeline(id)).mapTo[String]
 				result onSuccess {
-					case result: List[FacebookServer.Posts] =>
-						val body = HttpEntity(ContentTypes.`application/json`, result.toJson.toString)
+					case result =>
+						val body = HttpEntity(ContentTypes.`application/json`, result)
 						client ! HttpResponse(entity = body)
 				}
 				
