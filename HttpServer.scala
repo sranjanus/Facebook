@@ -48,6 +48,8 @@ object HttpServer extends JsonFormats {
 				IO(Http) ? Http.Bind(handler, interface = Ip, port = 8080 + i * 4)
 			}
 		}
+
+
 	}
 
 	class HttpService(server: ActorSelection) extends Actor {
@@ -58,11 +60,32 @@ object HttpServer extends JsonFormats {
 			case _: Http.Connected => sender ! Http.Register(self)
 
 			//Working end points
+			case HttpRequest(POST, Uri.Path("/likePage"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
+
+				val info = entity.data.asString.parseJson.convertTo[SendLikePage]
+				var client = sender
+				val result = (server ? FacebookServer.Server.LikePage(info.userId, info.pageId, info.time)).mapTo[String]
+				result onComplete {
+					case result =>
+						println(result)
+						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
+				}
+
+			case HttpRequest(POST, Uri.Path("/likePost"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
+
+				val info = entity.data.asString.parseJson.convertTo[SendLikePost]
+				var client = sender
+				val result = (server ? FacebookServer.Server.LikePost(info.userId, info.postId, info.time)).mapTo[String]
+				result onComplete {
+					case result =>
+						println(result)
+						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
+				}
 			case HttpRequest(POST, Uri.Path("/createAccount"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
 
 				val info = entity.data.asString.parseJson.convertTo[UserInfo]
 				var client = sender
-				val result = (server ? FacebookServer.Server.CreateUser(info.uname, info.dob, info.email, info.pass,info.key)).mapTo[String]
+				val result = (server ? FacebookServer.Server.CreateUser(info.uname, info.dob, info.email,info.key)).mapTo[String]
 				result onComplete {
 					case result =>
 						println(result)
@@ -92,8 +115,19 @@ object HttpServer extends JsonFormats {
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
 				}
 
+			case HttpRequest(POST, Uri.Path("/createPage"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
+
+				val info = entity.data.asString.parseJson.convertTo[CreatePageInfo]
+				var client = sender
+				val result = (server ? FacebookServer.Server.CreatePage(info.name,info.details,info.createrId)).mapTo[String]
+				result onComplete {
+					case result =>
+						println(result)
+						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
+				}
+
 			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/user" =>
-				var id = path.split("/").last.toInt
+				var id = path.split("/").last.toString
 				println(id);
 				var client = sender
 				val result = (server ? FacebookServer.Server.SendUserProfile(id)).mapTo[String]
@@ -105,17 +139,6 @@ object HttpServer extends JsonFormats {
 						client ! HttpResponse(entity = body)
 				}
 
-
-			//Not working end points
-			case HttpRequest(POST, Uri.Path("/login"), _, entity: HttpEntity.NonEmpty, _) =>
-				val info = entity.data.asString.parseJson.convertTo[UserInfo]
-				var client = sender
-				val result = (server ? FacebookServer.Server.LoginUser(info.uname, info.pass)).mapTo[String]
-				result onSuccess {
-					case  result =>
-						client ! HttpResponse(entity = result) 
-				}
-
 			case HttpRequest(POST, Uri.Path("/post"), _, entity: HttpEntity.NonEmpty, _) =>
 				val post = entity.data.asString.parseJson.convertTo[SendPost]
 				var client = sender
@@ -123,6 +146,81 @@ object HttpServer extends JsonFormats {
 				result onSuccess {
 					case result =>
 						client ! HttpResponse(entity = result)
+				}
+
+			case HttpRequest(POST, Uri.Path("/pagePost"), _, entity: HttpEntity.NonEmpty, _) =>
+				val post = entity.data.asString.parseJson.convertTo[SendPagePost]
+				var client = sender
+				val result = (server ? FacebookServer.Server.PagePost(post.pageId, post.time, post.msg)).mapTo[String]
+				result onSuccess {
+					case result =>
+						client ! HttpResponse(entity = result)
+				}
+
+			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/pagePosts" =>
+				var id = path.split("/").last.toString
+				var client = sender
+				val result = (server ? FacebookServer.Server.GetPagePosts(id.toString)).mapTo[String]
+				result onSuccess {
+					case result =>
+						val body = HttpEntity(ContentTypes.`application/json`, result)
+						client ! HttpResponse(entity = body)
+				} 	
+
+			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/page" =>
+				var id = path.split("/").last.toString
+				var client = sender
+				val result = (server ? FacebookServer.Server.PageInfo(id.toString)).mapTo[String]
+				result onSuccess {
+					case result =>
+						val body = HttpEntity(ContentTypes.`application/json`, result)
+						client ! HttpResponse(entity = body)
+				} 		
+
+			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/newsfeed" =>
+				var id = path.split("/").last.toString
+				var client = sender
+				val result = (server ? FacebookServer.Server.SendNewsfeed(id)).mapTo[String]
+				result onSuccess {
+					case result =>
+						val body = HttpEntity(ContentTypes.`application/json`, result)
+						client ! HttpResponse(entity = body)
+				} 
+
+			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/timeline" =>
+				var id = path.split("/").last.toString
+				var client = sender
+				val result = (server ? FacebookServer.Server.SendTimeline(id)).mapTo[String]
+				result onSuccess {
+					case result =>
+						val body = HttpEntity(ContentTypes.`application/json`, result)
+						client ! HttpResponse(entity = body)
+				}
+				
+			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/friends" =>
+				var id = path.split("/").last.toString
+				var client = sender
+				val result = (server ? FacebookServer.Server.SendFriends(id)).mapTo[String]
+				result onSuccess {
+					case result =>
+						val body = HttpEntity(ContentTypes.`application/json`, result)
+						client ! HttpResponse(entity = body)
+				}
+
+
+			case HttpRequest(GET, Uri.Path("/"), _, _, _) =>
+				val body  = HttpEntity(ContentTypes.`application/json`, "OK")
+				sender ! HttpResponse(entity = body)
+
+			//------------------------Not working
+			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/msg" =>
+				var id = path.split("/").last.toString
+				var client = sender
+				val result = (server ? FacebookServer.Server.SendMessages(id)).mapTo[List[FacebookServer.Messages]]
+				result onSuccess {
+					case result: List[FacebookServer.Messages] =>
+						val body = HttpEntity(ContentTypes.`application/json`, result.toJson.toString)
+						client ! HttpResponse(entity = body)
 				}
 
 			case HttpRequest(POST, Uri.Path("/msg"), _, entity: HttpEntity.NonEmpty, _) =>
@@ -133,51 +231,6 @@ object HttpServer extends JsonFormats {
 					case result =>
 						client ! HttpResponse(entity = result)
 				}
-
-			case HttpRequest(GET, Uri.Path("/"), _, _, _) =>
-				val body  = HttpEntity(ContentTypes.`application/json`, "OK")
-				sender ! HttpResponse(entity = body)
-
-			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/newsfeed" =>
-				var id = path.split("/").last.toInt
-				var client = sender
-				val result = (server ? FacebookServer.Server.SendNewsfeed(id)).mapTo[List[FacebookServer.Posts]]
-				result onSuccess {
-					case result: List[FacebookServer.Posts] =>
-						val body = HttpEntity(ContentTypes.`application/json`, result.toJson.toString)
-						client ! HttpResponse(entity = body)
-				} 
-
-			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/timeline" =>
-				var id = path.split("/").last.toInt
-				var client = sender
-				val result = (server ? FacebookServer.Server.SendTimeline(id)).mapTo[String]
-				result onSuccess {
-					case result =>
-						val body = HttpEntity(ContentTypes.`application/json`, result)
-						client ! HttpResponse(entity = body)
-				}
-				
-			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/friends" =>
-				var id = path.split("/").last.toInt
-				var client = sender
-				val result = (server ? FacebookServer.Server.SendFriends(id)).mapTo[List[UserProfile]]
-				result onSuccess {
-					case result: List[UserProfile] =>
-						val body = HttpEntity(ContentTypes.`application/json`, result.toJson.toString)
-						client ! HttpResponse(entity = body)
-				}
-
-			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/msg" =>
-				var id = path.split("/").last.toInt
-				var client = sender
-				val result = (server ? FacebookServer.Server.SendMessages(id)).mapTo[List[FacebookServer.Messages]]
-				result onSuccess {
-					case result: List[FacebookServer.Messages] =>
-						val body = HttpEntity(ContentTypes.`application/json`, result.toJson.toString)
-						client ! HttpResponse(entity = body)
-				}
-
 			case _: HttpRequest => sender ! HttpResponse(status = 404, entity = "Unknown!")
 		}
 	}

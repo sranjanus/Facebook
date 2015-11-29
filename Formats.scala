@@ -14,21 +14,28 @@ import spray.json.pimpAny
 
 trait JsonFormats extends DefaultJsonProtocol {
   case class SendPost(userId: String, time: Long, msg: String)
-  case class UserProfile(uname: String, dob: String, email: String)
-  case class UserInfo(uid: Int, uname: String, dob: String, email: String, pass: String, postCount: Int, friendsCount: Int, key: String)
+  case class UserProfile(userId:String,uname: String, dob: String, email: String)
+  case class UserInfo(uname: String, dob: String, email: String, key: String)
   case class SendMsg(senderId: Int, time: Long, msg: String, recepientId: Int)
   case class SendFriendRequest(senderId: String, recepientId: String,key:String)
-  case class GetPost(userId: String, time: Long, msg: String,likes:Int)
-
-
+  case class GetPost(postId:String,userId: String, time: Long, msg: String,likes:Int)
+  case class CreatePageInfo(name:String,details:String,createrId:String)
+  case class SendPageInfo(id:String,name:String,details:String,createrId:String,likes:Int,post:Int)
+  case class SendPagePost(pageId: String, time: Long, msg: String)
+  case class SendLikePage(userId:String,pageId:String,time:Long)
+  case class SendLikePost(userId:String,postId:String,time:Long)
 
   implicit val postFormat = jsonFormat3(SendPost)
-  implicit val userProfileFormat = jsonFormat3(UserProfile)
-  implicit val userInfoFormat = jsonFormat8(UserInfo)
+  implicit val userProfileFormat = jsonFormat4(UserProfile)
+  implicit val userInfoFormat = jsonFormat4(UserInfo)
   implicit val msgFormat = jsonFormat4(SendMsg)
   implicit val friendRequestFormat = jsonFormat3(SendFriendRequest)
-  implicit val getPostFormat = jsonFormat4(GetPost)
-
+  implicit val getPostFormat = jsonFormat5(GetPost)
+  implicit val createPageFormat = jsonFormat3(CreatePageInfo)
+  implicit val sendPageInfoFormat = jsonFormat6(SendPageInfo)
+  implicit val sendPagePostFormat = jsonFormat3(SendPagePost)
+  implicit val sendLikePageFormat = jsonFormat3(SendLikePage)
+  implicit val sendLikePostFormat = jsonFormat3(SendLikePost)
   implicit object TimelineJsonFormat extends JsonFormat[FacebookServer.Posts] {
     def write(c: FacebookServer.Posts) = JsObject(
       "authorId" -> JsString(c.authorId),

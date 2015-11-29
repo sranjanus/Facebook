@@ -21,12 +21,11 @@ import akka.routing.SmallestMailboxPool
 object FacebookServer extends JsonFormats{
 	case class sample(id: Int, name: String, noOfPosts: Int, friendsCount: Int) extends java.io.Serializable
 
-	class User (id: Int, uName: String, dob: String, email: String, pass: String,key : String) {
+	class User (id: String, uName: String, dob: String, email: String, key : String) {
 		var userId = id
 		var userName = uName
 		var dateOfBirth = dob
 		var emailAdd = email
-		var password = pass
 		var publicKey = key
 		var newsfeed: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
 		var timeline: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
@@ -36,9 +35,13 @@ object FacebookServer extends JsonFormats{
 		var pages: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
 	}
 
-	class Page(pid:String,name:String,details:String,createrId:String){
+	class Page( pid : String,pName:String,pDetails:String,pCreaterId:String){
+		var pageId = pid
+		var name = pName
+		var details = pDetails
+		var createrId = pCreaterId
 		var posts: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
-		var likes: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
+		var likes: ConcurrentHashMap[String,Long] = new ConcurrentHashMap()
 	}
 
 	class Posts(pid: String, id: String, post: String, time: Long, tagList: ArrayBuffer[String] = ArrayBuffer.empty, hashtagList: ArrayBuffer[String] = ArrayBuffer.empty){
@@ -48,7 +51,7 @@ object FacebookServer extends JsonFormats{
 		var postId = pid
 		var tags = tagList
 		var hashtags = hashtagList
-		var likes: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
+		var likes: ConcurrentHashMap[String, Long] = new ConcurrentHashMap()
 	}
 
 	class Messages(sid: Int, rid: Int, mid: String, msg: String, time: Long){
@@ -70,8 +73,8 @@ object FacebookServer extends JsonFormats{
 	var users: ConcurrentHashMap[String, User] = new ConcurrentHashMap()
 	var postStore: ConcurrentHashMap[String, Posts] = new ConcurrentHashMap()
 	var msgStore: ConcurrentHashMap[String, Messages] = new ConcurrentHashMap()
-	var pageStore: ConcurrentHashMap[String, Messages] = new ConcurrentHashMap()
-	
+	var pageStore: ConcurrentHashMap[String, Page] = new ConcurrentHashMap()
+
 	def main(args: Array[String]){
 		// create an actor system
 		val system = ActorSystem("FacebookServer", ConfigFactory.load(ConfigFactory.parseString("""{ "akka" : { "actor" : { "provider" : "akka.remote.RemoteActorRefProvider" }, "remote" : { "enabled-transports" : [ "akka.remote.netty.tcp" ], "netty" : { "tcp" : { "port" : 12000 , "maximum-frame-size" : 12800000b } } } } } """)))		
@@ -129,17 +132,23 @@ object FacebookServer extends JsonFormats{
   	}
 
 	object Server {
-		case class CreateUser(uName: String, dob: String, email: String, pass: String,key:String)
+		case class CreateUser(uName: String, dob: String, email: String,key:String)
 		case class LoginUser(uName: String, pass: String)
 		case class AddPost(userId: String, time: Long, msg: String)
+		case class PagePost(userId: String, time: Long, msg: String)
 		case class AddMsg(sId: Int, time: Long, msg: String, rId: Int)
-		case class SendMessages(userId: Int)
-		case class SendNewsfeed(userId: Int)
-		case class SendTimeline(userId: Int)
-		case class SendFriends(userId: Int)
-		case class SendUserProfile(userId: Int)
+		case class SendMessages(userId: String)
+		case class SendNewsfeed(userId: String)
+		case class SendTimeline(userId: String)
+		case class SendFriends(userId: String)
+		case class SendUserProfile(userId: String)
 		case class AddFriendRequest(userId:String,friendId: String,key:String)
 		case class AcceptFriendRequest(userId:String,friendId: String,key:String)
+		case class CreatePage(name:String,details:String,createrId:String)
+		case class PageInfo(id:String)
+		case class GetPagePosts(id:String)
+		case class LikePage(userId:String,pageId:String,time:Long)
+		case class LikePost(userId:String,postId:String,time:Long)
 	}
 
 	class Server extends Actor {
@@ -147,7 +156,7 @@ object FacebookServer extends JsonFormats{
 		import context._
 
 		def checkUser(uName: String): Boolean = {
-			return users.contains(uName);
+			return users.containsKey(uName);
 		}
 
 		def findUser(uName: String): User = {
@@ -157,6 +166,23 @@ object FacebookServer extends JsonFormats{
 		// Receive block for the server.
 		final def receive = LoggingReceive {
 
+			case LikePost(userId,postId,time) =>
+				if(users.containsKey(userId)&&postStore.containsKey(postId)){
+					var obj = postStore.get(postId)
+					obj.likes.put(userId,time)
+					sender ! "SUCCESS"					
+				}else{
+					sender ! "FAILED"					
+				}
+
+			case LikePage(userId,pageId,time) =>
+				if(users.containsKey(userId)&&pageStore.containsKey(pageId)){
+					var obj = pageStore.get(pageId)
+					obj.likes.put(userId,time)
+					sender ! "SUCCESS"					
+				}else{
+					sender ! "FAILED"					
+				}
 			//Working cases
 			case AddFriendRequest(userId,friendId,key) =>
 				var friend = users.get(friendId)
@@ -172,18 +198,19 @@ object FacebookServer extends JsonFormats{
 			case AcceptFriendRequest(userId,friendId,key) =>
 				var friend = users.get(friendId)
 				var user = users.get(userId)
-				if(user!=null&&friend!=null&&user.friendRequests.contains(friendId)){
+				
+				if(user!=null&&friend!=null&&user.friendRequests.containsKey(friendId+"")){
 					friend.friends.put(userId,key)
-					user.friends.put(friendId,user.friendRequests.get(friendId))
+					user.friends.put(friendId,user.friendRequests.get(friendId+""))
 					user.friendRequests.remove(friendId)
 					sender ! "SUCCESS"					
 				}else{
 					sender ! "FAILED"					
 				}
 
-			case CreateUser(uName, dob, email, pass,key) =>
+			case CreateUser(uName, dob, email,key) =>
 				var newUserId = wCtr.addAndGet(1)
-				var newUser = new User(newUserId, uName, dob, email, pass,key)
+				var newUser = new User(newUserId+"", uName, dob, email,key)
 				users.put(newUserId+"",newUser)
 				println("User "+newUserId);
 				sender ! newUserId+""			
@@ -193,10 +220,40 @@ object FacebookServer extends JsonFormats{
 				println(userId);
 				rdCtr.addAndGet(1)
 				var obj = users.get(userId+"")
-				var userProfile = UserProfile(obj.userName, obj.dateOfBirth, obj.emailAdd)
+				var userProfile = UserProfile(userId+"",obj.userName, obj.dateOfBirth, obj.emailAdd)
 				var json = userProfile.toJson.toString
 				sender ! json
 			
+
+			case SendFriends(userId) =>
+				rdCtr.addAndGet(1)
+				var idList = users.get(userId+"").friends.keySet()
+				var friends: ArrayBuffer[UserProfile] = ArrayBuffer.empty
+				var itr = idList.iterator()
+				while(itr.hasNext()){
+					var obj = users.get(itr.next())
+					friends += UserProfile(obj.userId, obj.userName, obj.dateOfBirth,obj.emailAdd)
+				}
+				sender ! friends.toList.toJson.toString
+
+			case PageInfo(pageId) =>
+				rdCtr.addAndGet(1)
+				var obj = pageStore.get(pageId+"")
+				var page = SendPageInfo(pageId, obj.name, obj.details, obj.createrId,obj.likes.size,obj.posts.size)
+				var json = page.toJson.toString
+				sender ! json
+
+			case GetPagePosts(pageId) =>
+				rdCtr.addAndGet(1)
+				var obj = pageStore.get(pageId+"")
+				var posts: ArrayBuffer[GetPost] = ArrayBuffer.empty
+				var itr = obj.posts.iterator()
+				while(itr.hasNext()) {
+					var temp = postStore.get(itr.next())
+					posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
+				}
+				sender ! posts.toList.toJson.toString
+
 			case SendNewsfeed(userId) =>
 				rdCtr.addAndGet(1)
 				var postIds = users.get(userId+"").newsfeed
@@ -204,7 +261,7 @@ object FacebookServer extends JsonFormats{
 				var itr = postIds.iterator()
 				while(itr.hasNext()) {
 					var temp = postStore.get(itr.next())
-					posts += GetPost(temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
+					posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
 				}
 				sender ! posts.toList.toJson.toString
 
@@ -215,7 +272,7 @@ object FacebookServer extends JsonFormats{
 				var itr = postIds.iterator()
 				while(itr.hasNext()) {
 					var temp = postStore.get(itr.next())
-					posts += GetPost(temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
+					posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
 				}
 				sender ! posts.toList.toJson.toString
 
@@ -246,6 +303,40 @@ object FacebookServer extends JsonFormats{
 				users.get(userId).timeline.add(postId)
 				sender ! postId
 
+			case PagePost(pageId, time, msg) =>
+				var regexTags = "@[a-zA-Z0-9]+\\s*".r
+				var regexHashtags = "#[a-zA-Z0-9]+\\s*".r
+				var postId = wCtr.addAndGet(1).toString // generate postId
+				var newPost = new Posts(postId, pageId, msg, time)
+
+				// extract tags and store in post object
+				var itr = regexTags.findAllMatchIn(msg)
+				while(itr.hasNext){
+					newPost.tags += itr.next().toString.trim
+				}
+
+				// extract all hastags and store in post object
+				itr = regexHashtags.findAllMatchIn(msg)
+				while(itr.hasNext){
+					newPost.hashtags  += itr.next().toString.trim
+				}
+
+				postStore.put(postId, newPost)
+
+				var friends = pageStore.get(pageId).likes.keySet().iterator()
+				while(friends.hasNext()){
+					users.get(friends.next()).newsfeed.add(postId)
+				}
+				pageStore.get(pageId).posts.add(postId)
+				sender ! postId
+
+			case CreatePage(name,details,createrId) =>
+				var pageId = wCtr.addAndGet(1).toString // generate postId
+				pageStore.put(pageId,new Page(pageId,name,details,createrId))
+				users.get(createrId).pages.add(pageId)
+				sender ! pageId
+
+
 			//Not working cases
 			case AddMsg(sId, time, msg, rId) =>
 				var mid = mCtr.addAndGet(1).toString
@@ -264,18 +355,6 @@ object FacebookServer extends JsonFormats{
 				}
 				sender ! msgs.toList
 
-
-
-			case SendFriends(userId) =>
-				rdCtr.addAndGet(1)
-				var idList = users.get(userId).friends.keySet()
-				var friends: ArrayBuffer[sample] = ArrayBuffer.empty
-				var itr = idList.iterator()
-				while(itr.hasNext()){
-					var obj = users.get(itr.next())
-					friends += sample(obj.userId, obj.userName, obj.timeline.size(), obj.friends.size())
-				}
-				sender != friends.toList
 
 			case _ => println("ERROR : Server Receive : Invalid Case")
 		}
