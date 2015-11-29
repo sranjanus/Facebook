@@ -151,6 +151,17 @@ object HttpServer extends JsonFormats {
 						client ! HttpResponse(entity = body)
 				}
 
+			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/pages" =>
+				var id = path.split("/").last.toString
+				var client = sender
+				val result = (server ? FacebookServer.Server.GetPages(id)).mapTo[String]
+				result onSuccess {
+					case result =>
+						println(result);
+						val body = HttpEntity(ContentTypes.`application/json`, result)
+						client ! HttpResponse(entity = body)
+				}
+
 			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/user" =>
 				var id = path.split("/").last.toString
 				println(id);

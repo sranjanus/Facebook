@@ -152,6 +152,7 @@ object FacebookServer extends JsonFormats{
 		case class LikePost(userId:String,postId:String,time:Long)
 		case class AddPicture(userId:String,picture:String)
 		case class GetAlbum(userId:String)
+		case class GetPages(userId:String)
 	}
 
 	class Server extends Actor {
@@ -179,6 +180,20 @@ object FacebookServer extends JsonFormats{
 						pictures += temp
 					}
 					sender ! SendPicture(pictures.toList).toJson.toString					
+				}else{
+					sender ! Response("FAILED","","Invalid user").toJson.toString					
+				}
+
+
+			case GetPages(userId) => 
+				if(users.containsKey(userId)){
+					var pages: ArrayBuffer[SendPageInfo] = ArrayBuffer.empty
+					var itr = users.get(userId).pages.iterator()
+					while(itr.hasNext()) {
+						var obj = pageStore.get(itr.next())
+						pages += SendPageInfo(obj.pageId, obj.name, obj.details, obj.createrId,obj.likes.size,obj.posts.size)
+					}
+					sender ! pages.toList.toJson.toString					
 				}else{
 					sender ! Response("FAILED","","Invalid user").toJson.toString					
 				}
@@ -222,6 +237,8 @@ object FacebookServer extends JsonFormats{
 				}
 
 
+
+
 			case AcceptFriendRequest(userId,friendId,key) =>
 				var friend = users.get(friendId)
 				var user = users.get(userId)
@@ -244,125 +261,157 @@ object FacebookServer extends JsonFormats{
 
 
 			case SendUserProfile(userId) =>
-				println(userId);
-				rdCtr.addAndGet(1)
-				var obj = users.get(userId+"")
-				var userProfile = UserProfile(userId+"",obj.userName, obj.dateOfBirth, obj.emailAdd)
-				var json = userProfile.toJson.toString
-				sender ! json
-			
+				if(users.containsKey(userId)){
+					println(userId);
+					rdCtr.addAndGet(1)
+					var obj = users.get(userId+"")
+					var userProfile = UserProfile(userId+"",obj.userName, obj.dateOfBirth, obj.emailAdd)
+					var json = userProfile.toJson.toString
+					sender ! json
+				}else{
+					sender ! Response("FAILED","","Invalid user").toJson.toString					
+				}
 
 			case SendFriends(userId) =>
-				rdCtr.addAndGet(1)
-				var idList = users.get(userId+"").friends.keySet()
-				var friends: ArrayBuffer[UserProfile] = ArrayBuffer.empty
-				var itr = idList.iterator()
-				while(itr.hasNext()){
-					var obj = users.get(itr.next())
-					friends += UserProfile(obj.userId, obj.userName, obj.dateOfBirth,obj.emailAdd)
+				if(users.containsKey(userId)){
+					rdCtr.addAndGet(1)
+					var idList = users.get(userId+"").friends.keySet()
+					var friends: ArrayBuffer[UserProfile] = ArrayBuffer.empty
+					var itr = idList.iterator()
+					while(itr.hasNext()){
+						var obj = users.get(itr.next())
+						friends += UserProfile(obj.userId, obj.userName, obj.dateOfBirth,obj.emailAdd)
+					}
+					sender ! friends.toList.toJson.toString
+				}else{
+					sender ! Response("FAILED","","Invalid user").toJson.toString					
 				}
-				sender ! friends.toList.toJson.toString
 
 			case PageInfo(pageId) =>
-				rdCtr.addAndGet(1)
-				var obj = pageStore.get(pageId+"")
-				var page = SendPageInfo(pageId, obj.name, obj.details, obj.createrId,obj.likes.size,obj.posts.size)
-				var json = page.toJson.toString
-				sender ! json
+				if(pageStore.containsKey(pageId)){
+					rdCtr.addAndGet(1)
+					var obj = pageStore.get(pageId+"")
+					var page = SendPageInfo(pageId, obj.name, obj.details, obj.createrId,obj.likes.size,obj.posts.size)
+					var json = page.toJson.toString
+					sender ! json
+				}else{
+					sender ! Response("FAILED","","Invalid page").toJson.toString					
+				}
 
 			case GetPagePosts(pageId) =>
-				rdCtr.addAndGet(1)
-				var obj = pageStore.get(pageId+"")
-				var posts: ArrayBuffer[GetPost] = ArrayBuffer.empty
-				var itr = obj.posts.iterator()
-				while(itr.hasNext()) {
-					var temp = postStore.get(itr.next())
-					posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
+				if(pageStore.containsKey(pageId)){
+					rdCtr.addAndGet(1)
+					var obj = pageStore.get(pageId+"")
+					var posts: ArrayBuffer[GetPost] = ArrayBuffer.empty
+					var itr = obj.posts.iterator()
+					while(itr.hasNext()) {
+						var temp = postStore.get(itr.next())
+						posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
+					}
+					sender ! posts.toList.toJson.toString
+				}else{
+					sender ! Response("FAILED","","Invalid page").toJson.toString					
 				}
-				sender ! posts.toList.toJson.toString
 
 			case SendNewsfeed(userId) =>
-				rdCtr.addAndGet(1)
-				var postIds = users.get(userId+"").newsfeed
-				var posts: ArrayBuffer[GetPost] = ArrayBuffer.empty
-				var itr = postIds.iterator()
-				while(itr.hasNext()) {
-					var temp = postStore.get(itr.next())
-					posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
+				if(users.containsKey(userId)){
+					rdCtr.addAndGet(1)
+					var postIds = users.get(userId+"").newsfeed
+					var posts: ArrayBuffer[GetPost] = ArrayBuffer.empty
+					var itr = postIds.iterator()
+					while(itr.hasNext()) {
+						var temp = postStore.get(itr.next())
+						posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
+					}
+					sender ! posts.toList.toJson.toString
+				}else{
+					sender ! Response("FAILED","","Invalid user").toJson.toString					
 				}
-				sender ! posts.toList.toJson.toString
 
 			case SendTimeline(userId) =>
-				rdCtr.addAndGet(1)
-				var postIds = users.get(userId+"").timeline
-				var posts: ArrayBuffer[GetPost] = ArrayBuffer.empty
-				var itr = postIds.iterator()
-				while(itr.hasNext()) {
-					var temp = postStore.get(itr.next())
-					posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
+				if(users.containsKey(userId)){
+					rdCtr.addAndGet(1)
+					var postIds = users.get(userId+"").timeline
+					var posts: ArrayBuffer[GetPost] = ArrayBuffer.empty
+					var itr = postIds.iterator()
+					while(itr.hasNext()) {
+						var temp = postStore.get(itr.next())
+						posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size)
+					}
+					sender ! posts.toList.toJson.toString
+				}else{
+					sender ! Response("FAILED","","Invalid user").toJson.toString					
 				}
-				sender ! posts.toList.toJson.toString
-
 			case AddPost(userId, time, msg) =>
-				var regexTags = "@[a-zA-Z0-9]+\\s*".r
-				var regexHashtags = "#[a-zA-Z0-9]+\\s*".r
-				var postId = wCtr.addAndGet(1).toString // generate postId
-				var newPost = new Posts(postId, userId, msg, time)
+				if(users.containsKey(userId)){
+					var regexTags = "@[a-zA-Z0-9]+\\s*".r
+					var regexHashtags = "#[a-zA-Z0-9]+\\s*".r
+					var postId = wCtr.addAndGet(1).toString // generate postId
+					var newPost = new Posts(postId, userId, msg, time)
 
-				// extract tags and store in post object
-				var itr = regexTags.findAllMatchIn(msg)
-				while(itr.hasNext){
-					newPost.tags += itr.next().toString.trim
+					// extract tags and store in post object
+					var itr = regexTags.findAllMatchIn(msg)
+					while(itr.hasNext){
+						newPost.tags += itr.next().toString.trim
+					}
+
+					// extract all hastags and store in post object
+					itr = regexHashtags.findAllMatchIn(msg)
+					while(itr.hasNext){
+						newPost.hashtags  += itr.next().toString.trim
+					}
+
+					postStore.put(postId, newPost)
+
+					var friends = users.get(userId).friends.keySet().iterator()
+					while(friends.hasNext()){
+						users.get(friends.next()).newsfeed.add(postId)
+					}
+					users.get(userId).timeline.add(postId)
+					sender ! Response("SUCCESS",postId+"","").toJson.toString
+				}else{
+					sender ! Response("FAILED","","Invalid user").toJson.toString					
 				}
-
-				// extract all hastags and store in post object
-				itr = regexHashtags.findAllMatchIn(msg)
-				while(itr.hasNext){
-					newPost.hashtags  += itr.next().toString.trim
-				}
-
-				postStore.put(postId, newPost)
-
-				var friends = users.get(userId).friends.keySet().iterator()
-				while(friends.hasNext()){
-					users.get(friends.next()).newsfeed.add(postId)
-				}
-				users.get(userId).timeline.add(postId)
-				sender ! Response("SUCCESS",postId+"","").toJson.toString
-
 			case PagePost(pageId, time, msg) =>
-				var regexTags = "@[a-zA-Z0-9]+\\s*".r
-				var regexHashtags = "#[a-zA-Z0-9]+\\s*".r
-				var postId = wCtr.addAndGet(1).toString // generate postId
-				var newPost = new Posts(postId, pageId, msg, time)
+				if(pageStore.containsKey(pageId)){
 
-				// extract tags and store in post object
-				var itr = regexTags.findAllMatchIn(msg)
-				while(itr.hasNext){
-					newPost.tags += itr.next().toString.trim
+					var regexTags = "@[a-zA-Z0-9]+\\s*".r
+					var regexHashtags = "#[a-zA-Z0-9]+\\s*".r
+					var postId = wCtr.addAndGet(1).toString // generate postId
+					var newPost = new Posts(postId, pageId, msg, time)
+
+					// extract tags and store in post object
+					var itr = regexTags.findAllMatchIn(msg)
+					while(itr.hasNext){
+						newPost.tags += itr.next().toString.trim
+					}
+
+					// extract all hastags and store in post object
+					itr = regexHashtags.findAllMatchIn(msg)
+					while(itr.hasNext){
+						newPost.hashtags  += itr.next().toString.trim
+					}
+
+					postStore.put(postId, newPost)
+
+					var friends = pageStore.get(pageId).likes.keySet().iterator()
+					while(friends.hasNext()){
+						users.get(friends.next()).newsfeed.add(postId)
+					}
+					pageStore.get(pageId).posts.add(postId)
+					sender ! Response("SUCCESS",postId+"","").toJson.toString
+				}else{
+					sender ! Response("FAILED","","Invalid page").toJson.toString					
 				}
-
-				// extract all hastags and store in post object
-				itr = regexHashtags.findAllMatchIn(msg)
-				while(itr.hasNext){
-					newPost.hashtags  += itr.next().toString.trim
-				}
-
-				postStore.put(postId, newPost)
-
-				var friends = pageStore.get(pageId).likes.keySet().iterator()
-				while(friends.hasNext()){
-					users.get(friends.next()).newsfeed.add(postId)
-				}
-				pageStore.get(pageId).posts.add(postId)
-				sender ! Response("SUCCESS",postId+"","").toJson.toString
-
 			case CreatePage(name,details,createrId) =>
-				var pageId = wCtr.addAndGet(1).toString // generate postId
-				pageStore.put(pageId,new Page(pageId,name,details,createrId))
-				users.get(createrId).pages.add(pageId)
-				sender ! Response("SUCCESS",pageId+"","").toJson.toString
-
+				if(users.containsKey(createrId)){
+					var pageId = wCtr.addAndGet(1).toString // generate postId
+					pageStore.put(pageId,new Page(pageId,name,details,createrId))
+					users.get(createrId).pages.add(pageId)
+					sender ! Response("SUCCESS",pageId+"","").toJson.toString
+				}else{
+					sender ! Response("FAILED","","Invalid user").toJson.toString					
+				}
 
 			//Not working cases
 			case AddMsg(sId, time, msg, rId) =>
