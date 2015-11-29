@@ -60,12 +60,24 @@ object HttpServer extends JsonFormats {
 			case _: Http.Connected => sender ! Http.Register(self)
 
 			//Working end points
+			case HttpRequest(POST, Uri.Path("/addPicture"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
+
+				val info = entity.data.asString.parseJson.convertTo[SendAddPicture]
+				var client = sender
+				val result = (server ? FacebookServer.Server.AddPicture(info.userId, info.picture)).mapTo[String]
+				result onSuccess {
+					case result =>
+						println(result)
+						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
+				}
+
+
 			case HttpRequest(POST, Uri.Path("/likePage"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
 
 				val info = entity.data.asString.parseJson.convertTo[SendLikePage]
 				var client = sender
 				val result = (server ? FacebookServer.Server.LikePage(info.userId, info.pageId, info.time)).mapTo[String]
-				result onComplete {
+				result onSuccess {
 					case result =>
 						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
@@ -76,7 +88,7 @@ object HttpServer extends JsonFormats {
 				val info = entity.data.asString.parseJson.convertTo[SendLikePost]
 				var client = sender
 				val result = (server ? FacebookServer.Server.LikePost(info.userId, info.postId, info.time)).mapTo[String]
-				result onComplete {
+				result onSuccess {
 					case result =>
 						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
@@ -86,10 +98,10 @@ object HttpServer extends JsonFormats {
 				val info = entity.data.asString.parseJson.convertTo[UserInfo]
 				var client = sender
 				val result = (server ? FacebookServer.Server.CreateUser(info.uname, info.dob, info.email,info.key)).mapTo[String]
-				result onComplete {
+				result onSuccess {
 					case result =>
 						println(result)
-						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
+						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result))
 					
 				}
 
@@ -98,7 +110,7 @@ object HttpServer extends JsonFormats {
 				val info = entity.data.asString.parseJson.convertTo[SendFriendRequest]
 				var client = sender
 				val result = (server ? FacebookServer.Server.AddFriendRequest(info.senderId, info.recepientId,info.key)).mapTo[String]
-				result onComplete {
+				result onSuccess {
 					case result =>
 						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
@@ -109,7 +121,7 @@ object HttpServer extends JsonFormats {
 				val info = entity.data.asString.parseJson.convertTo[SendFriendRequest]
 				var client = sender
 				val result = (server ? FacebookServer.Server.AcceptFriendRequest(info.senderId, info.recepientId,info.key)).mapTo[String]
-				result onComplete {
+				result onSuccess {
 					case result =>
 						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
@@ -120,17 +132,30 @@ object HttpServer extends JsonFormats {
 				val info = entity.data.asString.parseJson.convertTo[CreatePageInfo]
 				var client = sender
 				val result = (server ? FacebookServer.Server.CreatePage(info.name,info.details,info.createrId)).mapTo[String]
-				result onComplete {
+				result onSuccess {
 					case result =>
 						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
+				}
+
+			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/album" =>
+				var id = path.split("/").last.toString
+				println(id);
+				var client = sender
+				val result = (server ? FacebookServer.Server.GetAlbum(id)).mapTo[String]
+				println("-- "+id);
+				result onSuccess {
+					case result =>
+						println(result);
+						val body = HttpEntity(ContentTypes.`application/json`, result)
+						client ! HttpResponse(entity = body)
 				}
 
 			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/user" =>
 				var id = path.split("/").last.toString
 				println(id);
 				var client = sender
-				val result = (server ? FacebookServer.Server.SendUserProfile(id)).mapTo[String]
+				val result = (server ? FacebookServer.Server.GetAlbum(id)).mapTo[String]
 				println("-- "+id);
 				result onSuccess {
 					case result =>
@@ -145,7 +170,8 @@ object HttpServer extends JsonFormats {
 				val result = (server ? FacebookServer.Server.AddPost(post.userId, post.time, post.msg)).mapTo[String]
 				result onSuccess {
 					case result =>
-						client ! HttpResponse(entity = result)
+						val body = HttpEntity(ContentTypes.`application/json`, result)
+						client ! HttpResponse(entity = body)
 				}
 
 			case HttpRequest(POST, Uri.Path("/pagePost"), _, entity: HttpEntity.NonEmpty, _) =>
@@ -154,7 +180,8 @@ object HttpServer extends JsonFormats {
 				val result = (server ? FacebookServer.Server.PagePost(post.pageId, post.time, post.msg)).mapTo[String]
 				result onSuccess {
 					case result =>
-						client ! HttpResponse(entity = result)
+						val body = HttpEntity(ContentTypes.`application/json`, result)
+						client ! HttpResponse(entity = body)
 				}
 
 			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/pagePosts" =>

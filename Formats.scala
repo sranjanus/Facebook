@@ -24,6 +24,9 @@ trait JsonFormats extends DefaultJsonProtocol {
   case class SendPagePost(pageId: String, time: Long, msg: String)
   case class SendLikePage(userId:String,pageId:String,time:Long)
   case class SendLikePost(userId:String,postId:String,time:Long)
+  case class Response(status:String, id:String,message:String)
+  case class SendAddPicture(userId:String,picture:String)
+  case class SendPicture(picture:List[String])
 
   implicit val postFormat = jsonFormat3(SendPost)
   implicit val userProfileFormat = jsonFormat4(UserProfile)
@@ -36,6 +39,10 @@ trait JsonFormats extends DefaultJsonProtocol {
   implicit val sendPagePostFormat = jsonFormat3(SendPagePost)
   implicit val sendLikePageFormat = jsonFormat3(SendLikePage)
   implicit val sendLikePostFormat = jsonFormat3(SendLikePost)
+  implicit val responseFormat = jsonFormat3(Response)
+  implicit val sendAddPictureFormat = jsonFormat2(SendAddPicture)
+  implicit val sendPictureFormat = jsonFormat1(SendPicture)
+
   implicit object TimelineJsonFormat extends JsonFormat[FacebookServer.Posts] {
     def write(c: FacebookServer.Posts) = JsObject(
       "authorId" -> JsString(c.authorId),

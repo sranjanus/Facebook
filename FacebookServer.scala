@@ -33,6 +33,7 @@ object FacebookServer extends JsonFormats{
 		var friends: ConcurrentHashMap[String, String] = new ConcurrentHashMap()
 		var friendRequests: ConcurrentHashMap[String, String] = new ConcurrentHashMap()
 		var pages: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
+		var album: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
 	}
 
 	class Page( pid : String,pName:String,pDetails:String,pCreaterId:String){
@@ -149,6 +150,8 @@ object FacebookServer extends JsonFormats{
 		case class GetPagePosts(id:String)
 		case class LikePage(userId:String,pageId:String,time:Long)
 		case class LikePost(userId:String,postId:String,time:Long)
+		case class AddPicture(userId:String,picture:String)
+		case class GetAlbum(userId:String)
 	}
 
 	class Server extends Actor {
@@ -166,22 +169,46 @@ object FacebookServer extends JsonFormats{
 		// Receive block for the server.
 		final def receive = LoggingReceive {
 
+
+			case GetAlbum(userId) => 
+				if(users.containsKey(userId)){
+					var pictures: ArrayBuffer[String] = ArrayBuffer.empty
+					var itr = users.get(userId).album.iterator()
+					while(itr.hasNext()) {
+						var temp = itr.next()
+						pictures += temp
+					}
+					sender ! SendPicture(pictures.toList).toJson.toString					
+				}else{
+					sender ! Response("FAILED","","Invalid user").toJson.toString					
+				}
+
+			case AddPicture(userId,picture) => 
+				if(users.containsKey(userId)){
+					users.get(userId).album.add(picture)
+					sender ! Response("SUCCESS","","Picture Added Successfully").toJson.toString					
+				}else{
+					sender ! Response("FAILED","","Invalid user").toJson.toString					
+				}
+
+
+
 			case LikePost(userId,postId,time) =>
 				if(users.containsKey(userId)&&postStore.containsKey(postId)){
 					var obj = postStore.get(postId)
 					obj.likes.put(userId,time)
-					sender ! "SUCCESS"					
+					sender ! Response("SUCCESS","","").toJson.toString					
 				}else{
-					sender ! "FAILED"					
+					sender ! Response("FAILED","","Invalid user or post").toJson.toString					
 				}
 
 			case LikePage(userId,pageId,time) =>
 				if(users.containsKey(userId)&&pageStore.containsKey(pageId)){
 					var obj = pageStore.get(pageId)
 					obj.likes.put(userId,time)
-					sender ! "SUCCESS"					
+					sender ! Response("SUCCESS","","").toJson.toString					
 				}else{
-					sender ! "FAILED"					
+					sender ! Response("FAILED","","Invalid user or post").toJson.toString					
 				}
 			//Working cases
 			case AddFriendRequest(userId,friendId,key) =>
@@ -189,9 +216,9 @@ object FacebookServer extends JsonFormats{
 				var user = users.get(userId)
 				if(user!=null&&friend!=null){
 					friend.friendRequests.put(userId,key)
-					sender ! "SUCCESS"					
+					sender ! Response("SUCCESS","","").toJson.toString					
 				}else{
-					sender ! "FAILED"					
+					sender ! Response("FAILED","","Invalid user").toJson.toString					
 				}
 
 
@@ -203,9 +230,9 @@ object FacebookServer extends JsonFormats{
 					friend.friends.put(userId,key)
 					user.friends.put(friendId,user.friendRequests.get(friendId+""))
 					user.friendRequests.remove(friendId)
-					sender ! "SUCCESS"					
+					sender ! Response("SUCCESS","","").toJson.toString					
 				}else{
-					sender ! "FAILED"					
+					sender ! Response("FAILED","","Invalid user").toJson.toString					
 				}
 
 			case CreateUser(uName, dob, email,key) =>
@@ -213,7 +240,7 @@ object FacebookServer extends JsonFormats{
 				var newUser = new User(newUserId+"", uName, dob, email,key)
 				users.put(newUserId+"",newUser)
 				println("User "+newUserId);
-				sender ! newUserId+""			
+				sender ! Response("SUCCESS",newUserId+"","").toJson.toString			
 
 
 			case SendUserProfile(userId) =>
@@ -301,7 +328,7 @@ object FacebookServer extends JsonFormats{
 					users.get(friends.next()).newsfeed.add(postId)
 				}
 				users.get(userId).timeline.add(postId)
-				sender ! postId
+				sender ! Response("SUCCESS",postId+"","").toJson.toString
 
 			case PagePost(pageId, time, msg) =>
 				var regexTags = "@[a-zA-Z0-9]+\\s*".r
@@ -328,13 +355,13 @@ object FacebookServer extends JsonFormats{
 					users.get(friends.next()).newsfeed.add(postId)
 				}
 				pageStore.get(pageId).posts.add(postId)
-				sender ! postId
+				sender ! Response("SUCCESS",postId+"","").toJson.toString
 
 			case CreatePage(name,details,createrId) =>
 				var pageId = wCtr.addAndGet(1).toString // generate postId
 				pageStore.put(pageId,new Page(pageId,name,details,createrId))
 				users.get(createrId).pages.add(pageId)
-				sender ! pageId
+				sender ! Response("SUCCESS",pageId+"","").toJson.toString
 
 
 			//Not working cases
