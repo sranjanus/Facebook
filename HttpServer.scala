@@ -169,10 +169,9 @@ object HttpServer extends JsonFormats {
 
 			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/getFriendRequests" =>
 				var id = path.split("/").last.toString
-				println(id);
 				var client = sender
 				val result = (server ? FacebookServer.Server.GetFriendRequests(id)).mapTo[String]
-				println("-- "+id);
+				println("-- " +id);
 				result onSuccess {
 					case result =>
 						println(result);
