@@ -250,17 +250,6 @@ object HttpServer extends JsonFormats {
 				var client = sender
 				val result = (server ? FacebookServer.Server)
 
-			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/searchUsers" =>
-				var pattern = path.split("/").last.toString
-				var client = sender
-				var result = (server ? FacebookServer.Server.SearchUsers(pattern)).mapTo[String]
-				result onSuccess {
-					case result =>
-						val body = HttpEntity(ContentTypes.`application/json`, result)
-						client ! HttpResponse(entity = body)
-				}
-
-
 			case HttpRequest(GET, Uri.Path("/"), _, _, _) =>
 				val body  = HttpEntity(ContentTypes.`application/json`, "OK")
 				sender ! HttpResponse(entity = body)
