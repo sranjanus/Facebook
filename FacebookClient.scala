@@ -128,9 +128,11 @@ object FacebookClient extends JsonFormats {
        			var id = idsArr(j)
        			node ! Client.SendFriendRequest(id + "")
       		}
-
-      		node ! Client.GetFriendRequests
        	}
+
+        for(i <- 0 to noOfUsers - 1){
+          nodesArr(i) ! Client.GetFriendRequests
+        }
 
       case _ => println("FAILED HERE")
     }
