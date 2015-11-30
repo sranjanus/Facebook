@@ -1,4 +1,4 @@
-[0m[[0minfo[0m] [0mRunning com.FacebookApp.FacebookClient 10 10 192.168.1.15 10[0m
+[0m[[0minfo[0m] [0mRunning com.FacebookApp.FacebookClient 2500 2500 192.168.1.15 2500[0m
 [0m[[0mdebug[0m] [0mWaiting for threads to exit or System.exit to be called.[0m
 [0m[[0mdebug[0m] [0m  Classpath:[0m
 [0m[[0mdebug[0m] [0m	/Users/shashankranjan/GitHub/Facebook/target/scala-2.11/facebookapp_2.11-1.0.jar[0m
@@ -25,20 +25,4 @@
 [0m[[0mdebug[0m] [0m	/Users/shashankranjan/.ivy2/cache/commons-lang/commons-lang/jars/commons-lang-2.6.jar[0m
 [0m[[0mdebug[0m] [0mWaiting for thread run-main-0 to terminate.[0m
 [0m[[0mdebug[0m] [0m	Thread run-main-0 exited.[0m
-[0m[[0mdebug[0m] [0mWaiting for thread New I/O worker #1 to terminate.[0m
-[0m[[0mdebug[0m] [0m	Thread FacebookClients-7 exited.[0m
-[0m[[0mdebug[0m] [0mWaiting for thread FacebookClients-scheduler-1 to terminate.[0m
-[0m[[0mdebug[0m] [0m	Thread FacebookClients-scheduler-1 exited.[0m
 [0m[[0mdebug[0m] [0mWaiting for thread FacebookClients-akka.remote.default-remote-dispatcher-5 to terminate.[0m
-[0m[[0mdebug[0m] [0m	Thread FacebookClients-akka.remote.default-remote-dispatcher-5 exited.[0m
-[0m[[0mdebug[0m] [0mInterrupting remaining threads (should be all daemons).[0m
-[0m[[0mdebug[0m] [0mInterrupting thread FacebookClients-9[0m
-[0m[[0mdebug[0m] [0m	Interrupted FacebookClients-9[0m
-[0m[[0mdebug[0m] [0mInterrupting thread ForkJoinPool-3-worker-5[0m
-[0m[[0mdebug[0m] [0m	Interrupted ForkJoinPool-3-worker-5[0m
-[0m[[0mdebug[0m] [0mInterrupting thread ForkJoinPool-3-worker-7[0m
-[0m[[0mdebug[0m] [0m	Interrupted ForkJoinPool-3-worker-7[0m
-[0m[[0mdebug[0m] [0mInterrupting thread Thread-1[0m
-[0m[[0mdebug[0m] [0m	Interrupted Thread-1[0m
-[0m[[0mdebug[0m] [0mSandboxed run complete..[0m
-[0m[[0mdebug[0m] [0mExited with code 0[0m

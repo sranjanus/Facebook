@@ -33,7 +33,7 @@ import spray.json.pimpString
 
 object FacebookClient extends JsonFormats {
   var ipAddress: String = ""
-  var initPort = 8080
+  var initPort = 8082
   var noOfPorts = 0
   def main(args: Array[String]) {
     // exit if arguments not passed as command line param.
@@ -47,7 +47,7 @@ object FacebookClient extends JsonFormats {
       noOfPorts = args(3).toInt
 
       // create actor system and a watcher actor.
-      val system = ActorSystem("FacebookClients", ConfigFactory.load(ConfigFactory.parseString("""{ "akka" : { "actor" : { "provider" : "akka.remote.RemoteActorRefProvider" }, "remote" : { "enabled-transports" : [ "akka.remote.netty.tcp" ], "netty" : { "tcp" : { "port" : 13000 , "maximum-frame-size" : 12800000b } } } } } """)))
+      val system = ActorSystem("FacebookClients", ConfigFactory.load(ConfigFactory.parseString("""{ "akka" : { "actor" : { "provider" : "akka.remote.RemoteActorRefProvider" }, "remote" : { "enabled-transports" : [ "akka.remote.netty.tcp" ], "netty" : { "tcp" : { "port" : 8080 , "maximum-frame-size" : 12800000b } } } } } """)))
       
       // creates a watcher Actor.
       val watcher = system.actorOf(Props(new Watcher(noOfUsers, avgPostsPerSecond)), name = "Watcher")
@@ -92,7 +92,7 @@ object FacebookClient extends JsonFormats {
     var absoluteStartTime = System.currentTimeMillis() + (10 * 1000)
     // create given number of clients and initialize.
     for (i <- 0 to noOfUsers - 1) {
-      var port = initPort + rnd.nextInt(noOfPorts) * 4
+      var port = initPort + rnd.nextInt(noOfPorts)
       var node = actorOf(Props(new Client()), name = "" + i)
 
       // Initialize Clients with info like #Posts, duration of posts, start Time, router address. 
@@ -173,6 +173,7 @@ object FacebookClient extends JsonFormats {
     var id = ""
     val rand = new Random()
     var cancellable: Cancellable = null
+    var mCancellable: Cancellable = null
     var ctr = 0
     var endTime: Long = 0
     var port = 0
@@ -239,7 +240,7 @@ object FacebookClient extends JsonFormats {
     	return tmp
     }
 
-    def CreateAccount = {
+    def CreateAccount(absTime: Long) = {
     	var clientInfo = generateUserInfo()
     	val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
     	val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/createAccount", entity = HttpEntity(ContentTypes.`application/json`, UserInfo(clientInfo.uname, clientInfo.udob, clientInfo.uemail, clientInfo.ukey).toJson.toString))
@@ -253,6 +254,10 @@ object FacebookClient extends JsonFormats {
     					id = resp.id
     					system.actorSelection("akka.tcp://FacebookClients@" + ipAddress + ":13000/user/Watcher") ! Watcher.AddUserId(resp.id)
     					println("User " + resp.id + " created!!!")
+
+    					var relative = (absTime - System.currentTimeMillis()).toInt
+        				cancellable = system.scheduler.schedule(relative milliseconds, 5 second, self, GetNewsfeed)
+        				runEvent()
     				}
 
     			case Failure(error) =>
@@ -266,10 +271,7 @@ object FacebookClient extends JsonFormats {
         Initialize(avgNoOfPosts, duration, indexes)
         port = portNo
         setAbsoluteTime(absoluteTime)
-        CreateAccount
-        var relative = (absoluteTime - System.currentTimeMillis()).toInt
-        cancellable = system.scheduler.schedule(relative milliseconds, 5 second, self, GetNewsfeed)
-        runEvent()
+        CreateAccount(absoluteTime)
 
       case Post(noOfPosts: Int) =>
         for (j <- 1 to noOfPosts) {
