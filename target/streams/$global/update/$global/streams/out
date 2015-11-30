@@ -7,16 +7,9 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies for facebookapp#facebookapp_2.11;1.0 [compile][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->org.scala-lang#scala-library;2.11.2 [compile->default(compile)][0m
 [0m[[0minfo[0m] [0mResolving org.scala-lang#scala-library;2.11.2 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@25882397[0m
-[0m[[0minfo[0m] [0mResolving org.scala-lang#scala-library;2.11.2 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: sbt.ivyint.MergedDescriptors@25882397[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/org.scala-lang/scala-library/2.11.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for org.scala-lang#scala-library;2.11.2[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.scala-lang/scala-library/2.11.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: found md file for org.scala-lang#scala-library;2.11.2[0m
-[0m[[0mdebug[0m] [0m		=> /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.scala-lang/scala-library/2.11.2/ivys/ivy.xml (2.11.2)[0m
-[0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#scala-library;2.11.2!ivy.xml(ivy.original)[0m
-[0m[[0mdebug[0m] [0m	found org.scala-lang#scala-library;2.11.2 in activator-local[0m
+[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@5656c636[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.scala-lang#scala-library;2.11.2[0m
+[0m[[0mdebug[0m] [0m	found org.scala-lang#scala-library;2.11.2 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m	[2.11.2] org.scala-lang#scala-library;2.11.2[0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->org.scala-lang#scala-library;2.11.2 [compile->runtime][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->org.scala-lang#scala-library;2.11.2 [compile->compile][0m
@@ -128,27 +121,8 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->io.spray#spray-routing_2.11;1.3.2 [compile->default(compile)][0m
 [0m[[0minfo[0m] [0mResolving io.spray#spray-routing_2.11;1.3.2 ...[0m
 [0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: io.spray#spray-routing_2.11;1.3.2 {compile=[default(compile)]}[0m
-[0m[[0minfo[0m] [0mResolving io.spray#spray-routing_2.11;1.3.2 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: io.spray#spray-routing_2.11;1.3.2 {compile=[default(compile)]}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/io.spray/spray-routing_2.11/1.3.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for io.spray#spray-routing_2.11;1.3.2[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/io.spray/spray-routing_2.11/1.3.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: no ivy file found for io.spray#spray-routing_2.11;1.3.2[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/io.spray/spray-routing_2.11/1.3.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-launcher-local: no ivy file found for io.spray#spray-routing_2.11;1.3.2[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/io/spray/spray-routing_2.11/1.3.2/spray-routing_2.11-1.3.2.pom[0m
-[0m[[0mdebug[0m] [0m	public: found md file for io.spray#spray-routing_2.11;1.3.2[0m
-[0m[[0mdebug[0m] [0m		=> https://repo1.maven.org/maven2/io/spray/spray-routing_2.11/1.3.2/spray-routing_2.11-1.3.2.pom (1.3.2)[0m
-[0m[[0mdebug[0m] [0mdownloading https://repo1.maven.org/maven2/io/spray/spray-routing_2.11/1.3.2/spray-routing_2.11-1.3.2.pom ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-routing_2.11/1.3.2/spray-routing_2.11-1.3.2.pom[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-routing_2.11/1.3.2/spray-routing_2.11-1.3.2.pom.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/io/spray/spray-routing_2.11/1.3.2/spray-routing_2.11-1.3.2.pom[0m
-[0m[[0mdebug[0m] [0m	[SUCCESSFUL ] io.spray#spray-routing_2.11;1.3.2!spray-routing_2.11.pom(pom.original) (143ms)[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/io.spray/spray-routing_2.11/1.3.2/bundles/spray-routing_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/io.spray/spray-routing_2.11/1.3.2/bundles/spray-routing_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/io.spray/spray-routing_2.11/1.3.2/bundles/spray-routing_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/io/spray/spray-routing_2.11/1.3.2/spray-routing_2.11-1.3.2.jar[0m
-[0m[[0mdebug[0m] [0m	found io.spray#spray-routing_2.11;1.3.2 in public[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: io.spray#spray-routing_2.11;1.3.2[0m
+[0m[[0mdebug[0m] [0m	found io.spray#spray-routing_2.11;1.3.2 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->io.spray#spray-routing_2.11;1.3.2 [compile->runtime][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->io.spray#spray-routing_2.11;1.3.2 [compile->compile][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies io.spray#spray-routing_2.11;1.3.2->org.scala-lang#scala-library;2.11.2 [compile->master(compile)][0m
@@ -158,27 +132,8 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies io.spray#spray-routing_2.11;1.3.2->io.spray#spray-httpx_2.11;1.3.2 [compile->master(compile)][0m
 [0m[[0minfo[0m] [0mResolving io.spray#spray-httpx_2.11;1.3.2 ...[0m
 [0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: io.spray#spray-httpx_2.11;1.3.2 {compile=[compile(*), master(compile)], runtime=[runtime(*)]}[0m
-[0m[[0minfo[0m] [0mResolving io.spray#spray-httpx_2.11;1.3.2 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: io.spray#spray-httpx_2.11;1.3.2 {compile=[compile(*), master(compile)], runtime=[runtime(*)]}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/io.spray/spray-httpx_2.11/1.3.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for io.spray#spray-httpx_2.11;1.3.2[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/io.spray/spray-httpx_2.11/1.3.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: no ivy file found for io.spray#spray-httpx_2.11;1.3.2[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/io.spray/spray-httpx_2.11/1.3.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-launcher-local: no ivy file found for io.spray#spray-httpx_2.11;1.3.2[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/io/spray/spray-httpx_2.11/1.3.2/spray-httpx_2.11-1.3.2.pom[0m
-[0m[[0mdebug[0m] [0m	public: found md file for io.spray#spray-httpx_2.11;1.3.2[0m
-[0m[[0mdebug[0m] [0m		=> https://repo1.maven.org/maven2/io/spray/spray-httpx_2.11/1.3.2/spray-httpx_2.11-1.3.2.pom (1.3.2)[0m
-[0m[[0mdebug[0m] [0mdownloading https://repo1.maven.org/maven2/io/spray/spray-httpx_2.11/1.3.2/spray-httpx_2.11-1.3.2.pom ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-httpx_2.11/1.3.2/spray-httpx_2.11-1.3.2.pom[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-httpx_2.11/1.3.2/spray-httpx_2.11-1.3.2.pom.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/io/spray/spray-httpx_2.11/1.3.2/spray-httpx_2.11-1.3.2.pom[0m
-[0m[[0mdebug[0m] [0m	[SUCCESSFUL ] io.spray#spray-httpx_2.11;1.3.2!spray-httpx_2.11.pom(pom.original) (172ms)[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/io.spray/spray-httpx_2.11/1.3.2/bundles/spray-httpx_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/io.spray/spray-httpx_2.11/1.3.2/bundles/spray-httpx_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/io.spray/spray-httpx_2.11/1.3.2/bundles/spray-httpx_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/io/spray/spray-httpx_2.11/1.3.2/spray-httpx_2.11-1.3.2.jar[0m
-[0m[[0mdebug[0m] [0m	found io.spray#spray-httpx_2.11;1.3.2 in public[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: io.spray#spray-httpx_2.11;1.3.2[0m
+[0m[[0mdebug[0m] [0m	found io.spray#spray-httpx_2.11;1.3.2 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m== resolving dependencies io.spray#spray-routing_2.11;1.3.2->io.spray#spray-httpx_2.11;1.3.2 [compile->compile(*)][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies io.spray#spray-httpx_2.11;1.3.2->org.scala-lang#scala-library;2.11.2 [compile->master(compile)][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies io.spray#spray-httpx_2.11;1.3.2->org.scala-lang#scala-library;2.11.2 [compile->compile(*)][0m
@@ -191,15 +146,8 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies io.spray#spray-httpx_2.11;1.3.2->org.jvnet.mimepull#mimepull;1.9.4 [compile->master(compile)][0m
 [0m[[0minfo[0m] [0mResolving org.jvnet.mimepull#mimepull;1.9.4 ...[0m
 [0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: org.jvnet.mimepull#mimepull;1.9.4 {compile=[compile(*), master(compile)], runtime=[runtime(*)]}[0m
-[0m[[0minfo[0m] [0mResolving org.jvnet.mimepull#mimepull;1.9.4 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: org.jvnet.mimepull#mimepull;1.9.4 {compile=[compile(*), master(compile)], runtime=[runtime(*)]}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/org.jvnet.mimepull/mimepull/1.9.4/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for org.jvnet.mimepull#mimepull;1.9.4[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.jvnet.mimepull/mimepull/1.9.4/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: found md file for org.jvnet.mimepull#mimepull;1.9.4[0m
-[0m[[0mdebug[0m] [0m		=> /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.jvnet.mimepull/mimepull/1.9.4/ivys/ivy.xml (1.9.4)[0m
-[0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.jvnet.mimepull#mimepull;1.9.4!ivy.xml(ivy.original)[0m
-[0m[[0mdebug[0m] [0m	found org.jvnet.mimepull#mimepull;1.9.4 in activator-local[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.jvnet.mimepull#mimepull;1.9.4[0m
+[0m[[0mdebug[0m] [0m	found org.jvnet.mimepull#mimepull;1.9.4 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m== resolving dependencies io.spray#spray-httpx_2.11;1.3.2->org.jvnet.mimepull#mimepull;1.9.4 [compile->compile(*)][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies io.spray#spray-routing_2.11;1.3.2->io.spray#spray-httpx_2.11;1.3.2 [compile->runtime(*)][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies io.spray#spray-routing_2.11;1.3.2->io.spray#spray-httpx_2.11;1.3.2 [compile->compile][0m
@@ -244,27 +192,8 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->io.spray#spray-client_2.11;1.3.2 [compile->default(compile)][0m
 [0m[[0minfo[0m] [0mResolving io.spray#spray-client_2.11;1.3.2 ...[0m
 [0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: io.spray#spray-client_2.11;1.3.2 {compile=[default(compile)]}[0m
-[0m[[0minfo[0m] [0mResolving io.spray#spray-client_2.11;1.3.2 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: io.spray#spray-client_2.11;1.3.2 {compile=[default(compile)]}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/io.spray/spray-client_2.11/1.3.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for io.spray#spray-client_2.11;1.3.2[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/io.spray/spray-client_2.11/1.3.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: no ivy file found for io.spray#spray-client_2.11;1.3.2[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/io.spray/spray-client_2.11/1.3.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-launcher-local: no ivy file found for io.spray#spray-client_2.11;1.3.2[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/io/spray/spray-client_2.11/1.3.2/spray-client_2.11-1.3.2.pom[0m
-[0m[[0mdebug[0m] [0m	public: found md file for io.spray#spray-client_2.11;1.3.2[0m
-[0m[[0mdebug[0m] [0m		=> https://repo1.maven.org/maven2/io/spray/spray-client_2.11/1.3.2/spray-client_2.11-1.3.2.pom (1.3.2)[0m
-[0m[[0mdebug[0m] [0mdownloading https://repo1.maven.org/maven2/io/spray/spray-client_2.11/1.3.2/spray-client_2.11-1.3.2.pom ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-client_2.11/1.3.2/spray-client_2.11-1.3.2.pom[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-client_2.11/1.3.2/spray-client_2.11-1.3.2.pom.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/io/spray/spray-client_2.11/1.3.2/spray-client_2.11-1.3.2.pom[0m
-[0m[[0mdebug[0m] [0m	[SUCCESSFUL ] io.spray#spray-client_2.11;1.3.2!spray-client_2.11.pom(pom.original) (166ms)[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/io.spray/spray-client_2.11/1.3.2/bundles/spray-client_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/io.spray/spray-client_2.11/1.3.2/bundles/spray-client_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/io.spray/spray-client_2.11/1.3.2/bundles/spray-client_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/io/spray/spray-client_2.11/1.3.2/spray-client_2.11-1.3.2.jar[0m
-[0m[[0mdebug[0m] [0m	found io.spray#spray-client_2.11;1.3.2 in public[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: io.spray#spray-client_2.11;1.3.2[0m
+[0m[[0mdebug[0m] [0m	found io.spray#spray-client_2.11;1.3.2 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->io.spray#spray-client_2.11;1.3.2 [compile->runtime][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->io.spray#spray-client_2.11;1.3.2 [compile->compile][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies io.spray#spray-client_2.11;1.3.2->org.scala-lang#scala-library;2.11.2 [compile->master(compile)][0m
@@ -293,27 +222,8 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->io.spray#spray-json_2.11;1.3.1 [compile->default(compile)][0m
 [0m[[0minfo[0m] [0mResolving io.spray#spray-json_2.11;1.3.1 ...[0m
 [0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: io.spray#spray-json_2.11;1.3.1 {compile=[default(compile)]}[0m
-[0m[[0minfo[0m] [0mResolving io.spray#spray-json_2.11;1.3.1 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: io.spray#spray-json_2.11;1.3.1 {compile=[default(compile)]}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/io.spray/spray-json_2.11/1.3.1/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for io.spray#spray-json_2.11;1.3.1[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/io.spray/spray-json_2.11/1.3.1/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: no ivy file found for io.spray#spray-json_2.11;1.3.1[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/io.spray/spray-json_2.11/1.3.1/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-launcher-local: no ivy file found for io.spray#spray-json_2.11;1.3.1[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/io/spray/spray-json_2.11/1.3.1/spray-json_2.11-1.3.1.pom[0m
-[0m[[0mdebug[0m] [0m	public: found md file for io.spray#spray-json_2.11;1.3.1[0m
-[0m[[0mdebug[0m] [0m		=> https://repo1.maven.org/maven2/io/spray/spray-json_2.11/1.3.1/spray-json_2.11-1.3.1.pom (1.3.1)[0m
-[0m[[0mdebug[0m] [0mdownloading https://repo1.maven.org/maven2/io/spray/spray-json_2.11/1.3.1/spray-json_2.11-1.3.1.pom ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-json_2.11/1.3.1/spray-json_2.11-1.3.1.pom[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-json_2.11/1.3.1/spray-json_2.11-1.3.1.pom.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/io/spray/spray-json_2.11/1.3.1/spray-json_2.11-1.3.1.pom[0m
-[0m[[0mdebug[0m] [0m	[SUCCESSFUL ] io.spray#spray-json_2.11;1.3.1!spray-json_2.11.pom(pom.original) (139ms)[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/io.spray/spray-json_2.11/1.3.1/bundles/spray-json_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/io.spray/spray-json_2.11/1.3.1/bundles/spray-json_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/io.spray/spray-json_2.11/1.3.1/bundles/spray-json_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/io/spray/spray-json_2.11/1.3.1/spray-json_2.11-1.3.1.jar[0m
-[0m[[0mdebug[0m] [0m	found io.spray#spray-json_2.11;1.3.1 in public[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: io.spray#spray-json_2.11;1.3.1[0m
+[0m[[0mdebug[0m] [0m	found io.spray#spray-json_2.11;1.3.1 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->io.spray#spray-json_2.11;1.3.1 [compile->runtime][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->io.spray#spray-json_2.11;1.3.1 [compile->compile][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies io.spray#spray-json_2.11;1.3.1->org.scala-lang#scala-library;2.11.2 [compile->master(compile)][0m
@@ -324,53 +234,15 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->com.typesafe.akka#akka-actor_2.11;2.3.7 [compile->default(compile)][0m
 [0m[[0minfo[0m] [0mResolving com.typesafe.akka#akka-actor_2.11;2.3.7 ...[0m
 [0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: com.typesafe.akka#akka-actor_2.11;2.3.7 {compile=[default(compile)]}[0m
-[0m[[0minfo[0m] [0mResolving com.typesafe.akka#akka-actor_2.11;2.3.7 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: com.typesafe.akka#akka-actor_2.11;2.3.7 {compile=[default(compile)]}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/com.typesafe.akka/akka-actor_2.11/2.3.7/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for com.typesafe.akka#akka-actor_2.11;2.3.7[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/com.typesafe.akka/akka-actor_2.11/2.3.7/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: no ivy file found for com.typesafe.akka#akka-actor_2.11;2.3.7[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/com.typesafe.akka/akka-actor_2.11/2.3.7/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-launcher-local: no ivy file found for com.typesafe.akka#akka-actor_2.11;2.3.7[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.7/akka-actor_2.11-2.3.7.pom[0m
-[0m[[0mdebug[0m] [0m	public: found md file for com.typesafe.akka#akka-actor_2.11;2.3.7[0m
-[0m[[0mdebug[0m] [0m		=> https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.7/akka-actor_2.11-2.3.7.pom (2.3.7)[0m
-[0m[[0mdebug[0m] [0mdownloading https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.7/akka-actor_2.11-2.3.7.pom ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.7/akka-actor_2.11-2.3.7.pom[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.7/akka-actor_2.11-2.3.7.pom.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.7/akka-actor_2.11-2.3.7.pom[0m
-[0m[[0mdebug[0m] [0m	[SUCCESSFUL ] com.typesafe.akka#akka-actor_2.11;2.3.7!akka-actor_2.11.pom(pom.original) (176ms)[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/com.typesafe.akka/akka-actor_2.11/2.3.7/jars/akka-actor_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/com.typesafe.akka/akka-actor_2.11/2.3.7/jars/akka-actor_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/com.typesafe.akka/akka-actor_2.11/2.3.7/jars/akka-actor_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.7/akka-actor_2.11-2.3.7.jar[0m
-[0m[[0mdebug[0m] [0m	found com.typesafe.akka#akka-actor_2.11;2.3.7 in public[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: com.typesafe.akka#akka-actor_2.11;2.3.7[0m
+[0m[[0mdebug[0m] [0m	found com.typesafe.akka#akka-actor_2.11;2.3.7 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->com.typesafe.akka#akka-actor_2.11;2.3.7 [compile->runtime][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->com.typesafe.akka#akka-actor_2.11;2.3.7 [compile->compile][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.11;2.3.7->org.scala-lang#scala-library;2.11.4 [compile->master(compile)][0m
 [0m[[0minfo[0m] [0mResolving org.scala-lang#scala-library;2.11.4 ...[0m
 [0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: org.scala-lang#scala-library;2.11.4 {compile=[compile(*), master(compile)], runtime=[runtime(*)]}[0m
-[0m[[0minfo[0m] [0mResolving org.scala-lang#scala-library;2.11.4 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: org.scala-lang#scala-library;2.11.4 {compile=[compile(*), master(compile)], runtime=[runtime(*)]}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/org.scala-lang/scala-library/2.11.4/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for org.scala-lang#scala-library;2.11.4[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.scala-lang/scala-library/2.11.4/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: no ivy file found for org.scala-lang#scala-library;2.11.4[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/org.scala-lang/scala-library/2.11.4/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-launcher-local: no ivy file found for org.scala-lang#scala-library;2.11.4[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.4/scala-library-2.11.4.pom[0m
-[0m[[0mdebug[0m] [0m	public: found md file for org.scala-lang#scala-library;2.11.4[0m
-[0m[[0mdebug[0m] [0m		=> https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.4/scala-library-2.11.4.pom (2.11.4)[0m
-[0m[[0mdebug[0m] [0mdownloading https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.4/scala-library-2.11.4.pom ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.4/scala-library-2.11.4.pom[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.4/scala-library-2.11.4.pom.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.4/scala-library-2.11.4.pom[0m
-[0m[[0mdebug[0m] [0m	[SUCCESSFUL ] org.scala-lang#scala-library;2.11.4!scala-library.pom(pom.original) (172ms)[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/org.scala-lang/scala-library/2.11.4/jars/scala-library.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.scala-lang/scala-library/2.11.4/jars/scala-library.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/org.scala-lang/scala-library/2.11.4/jars/scala-library.jar[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.4/scala-library-2.11.4.jar[0m
-[0m[[0mdebug[0m] [0m	found org.scala-lang#scala-library;2.11.4 in public[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.scala-lang#scala-library;2.11.4[0m
+[0m[[0mdebug[0m] [0m	found org.scala-lang#scala-library;2.11.4 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m	[2.11.4] org.scala-lang#scala-library;2.11.4[0m
 [0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.11;2.3.7->org.scala-lang#scala-library;2.11.4 [compile->compile(*)][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-actor_2.11;2.3.7->org.scala-lang#scala-library;2.11.4 [compile->runtime(*)][0m
@@ -397,27 +269,8 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->com.typesafe.akka#akka-remote_2.11;2.3.7 [compile->default(compile)][0m
 [0m[[0minfo[0m] [0mResolving com.typesafe.akka#akka-remote_2.11;2.3.7 ...[0m
 [0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: com.typesafe.akka#akka-remote_2.11;2.3.7 {compile=[default(compile)]}[0m
-[0m[[0minfo[0m] [0mResolving com.typesafe.akka#akka-remote_2.11;2.3.7 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: com.typesafe.akka#akka-remote_2.11;2.3.7 {compile=[default(compile)]}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/com.typesafe.akka/akka-remote_2.11/2.3.7/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for com.typesafe.akka#akka-remote_2.11;2.3.7[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/com.typesafe.akka/akka-remote_2.11/2.3.7/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: no ivy file found for com.typesafe.akka#akka-remote_2.11;2.3.7[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/com.typesafe.akka/akka-remote_2.11/2.3.7/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-launcher-local: no ivy file found for com.typesafe.akka#akka-remote_2.11;2.3.7[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/com/typesafe/akka/akka-remote_2.11/2.3.7/akka-remote_2.11-2.3.7.pom[0m
-[0m[[0mdebug[0m] [0m	public: found md file for com.typesafe.akka#akka-remote_2.11;2.3.7[0m
-[0m[[0mdebug[0m] [0m		=> https://repo1.maven.org/maven2/com/typesafe/akka/akka-remote_2.11/2.3.7/akka-remote_2.11-2.3.7.pom (2.3.7)[0m
-[0m[[0mdebug[0m] [0mdownloading https://repo1.maven.org/maven2/com/typesafe/akka/akka-remote_2.11/2.3.7/akka-remote_2.11-2.3.7.pom ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/com/typesafe/akka/akka-remote_2.11/2.3.7/akka-remote_2.11-2.3.7.pom[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/com/typesafe/akka/akka-remote_2.11/2.3.7/akka-remote_2.11-2.3.7.pom.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/com/typesafe/akka/akka-remote_2.11/2.3.7/akka-remote_2.11-2.3.7.pom[0m
-[0m[[0mdebug[0m] [0m	[SUCCESSFUL ] com.typesafe.akka#akka-remote_2.11;2.3.7!akka-remote_2.11.pom(pom.original) (150ms)[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/com.typesafe.akka/akka-remote_2.11/2.3.7/jars/akka-remote_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/com.typesafe.akka/akka-remote_2.11/2.3.7/jars/akka-remote_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/com.typesafe.akka/akka-remote_2.11/2.3.7/jars/akka-remote_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/com/typesafe/akka/akka-remote_2.11/2.3.7/akka-remote_2.11-2.3.7.jar[0m
-[0m[[0mdebug[0m] [0m	found com.typesafe.akka#akka-remote_2.11;2.3.7 in public[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: com.typesafe.akka#akka-remote_2.11;2.3.7[0m
+[0m[[0mdebug[0m] [0m	found com.typesafe.akka#akka-remote_2.11;2.3.7 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->com.typesafe.akka#akka-remote_2.11;2.3.7 [compile->runtime][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->com.typesafe.akka#akka-remote_2.11;2.3.7 [compile->compile][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies com.typesafe.akka#akka-remote_2.11;2.3.7->org.scala-lang#scala-library;2.11.4 [compile->master(compile)][0m
@@ -468,89 +321,8 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->commons-lang#commons-lang;2.6 [compile->default(compile)][0m
 [0m[[0minfo[0m] [0mResolving commons-lang#commons-lang;2.6 ...[0m
 [0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: commons-lang#commons-lang;2.6 {compile=[default(compile)]}[0m
-[0m[[0minfo[0m] [0mResolving commons-lang#commons-lang;2.6 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: commons-lang#commons-lang;2.6 {compile=[default(compile)]}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/commons-lang/commons-lang/2.6/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for commons-lang#commons-lang;2.6[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/commons-lang/commons-lang/2.6/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: no ivy file found for commons-lang#commons-lang;2.6[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/commons-lang/commons-lang/2.6/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-launcher-local: no ivy file found for commons-lang#commons-lang;2.6[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.pom[0m
-[0m[[0mdebug[0m] [0m	public: found md file for commons-lang#commons-lang;2.6[0m
-[0m[[0mdebug[0m] [0m		=> https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.pom (2.6)[0m
-[0m[[0mdebug[0m] [0mdownloading https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.pom ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.pom[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.pom.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.pom[0m
-[0m[[0mdebug[0m] [0m	[SUCCESSFUL ] commons-lang#commons-lang;2.6!commons-lang.pom(pom.original) (176ms)[0m
-[0m[[0minfo[0m] [0mResolving org.apache.commons#commons-parent;17 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: org.apache.commons#commons-parent;17 {}[0m
-[0m[[0minfo[0m] [0mResolving org.apache.commons#commons-parent;17 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: org.apache.commons#commons-parent;17 {}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/org.apache.commons/commons-parent/17/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for org.apache.commons#commons-parent;17[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.apache.commons/commons-parent/17/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: no ivy file found for org.apache.commons#commons-parent;17[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/org.apache.commons/commons-parent/17/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-launcher-local: no ivy file found for org.apache.commons#commons-parent;17[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/org/apache/commons/commons-parent/17/commons-parent-17.pom[0m
-[0m[[0mdebug[0m] [0m	public: found md file for org.apache.commons#commons-parent;17[0m
-[0m[[0mdebug[0m] [0m		=> https://repo1.maven.org/maven2/org/apache/commons/commons-parent/17/commons-parent-17.pom (17)[0m
-[0m[[0mdebug[0m] [0mdownloading https://repo1.maven.org/maven2/org/apache/commons/commons-parent/17/commons-parent-17.pom ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/org/apache/commons/commons-parent/17/commons-parent-17.pom[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/org/apache/commons/commons-parent/17/commons-parent-17.pom.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/org/apache/commons/commons-parent/17/commons-parent-17.pom[0m
-[0m[[0mdebug[0m] [0m	[SUCCESSFUL ] org.apache.commons#commons-parent;17!commons-parent.pom(pom.original) (292ms)[0m
-[0m[[0minfo[0m] [0mResolving org.apache#apache;7 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: org.apache#apache;7 {}[0m
-[0m[[0minfo[0m] [0mResolving org.apache#apache;7 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: org.apache#apache;7 {}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/org.apache/apache/7/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for org.apache#apache;7[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.apache/apache/7/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: no ivy file found for org.apache#apache;7[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/org.apache/apache/7/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-launcher-local: no ivy file found for org.apache#apache;7[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/org/apache/apache/7/apache-7.pom[0m
-[0m[[0mdebug[0m] [0m	public: found md file for org.apache#apache;7[0m
-[0m[[0mdebug[0m] [0m		=> https://repo1.maven.org/maven2/org/apache/apache/7/apache-7.pom (7)[0m
-[0m[[0mdebug[0m] [0mdownloading https://repo1.maven.org/maven2/org/apache/apache/7/apache-7.pom ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/org/apache/apache/7/apache-7.pom[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/org/apache/apache/7/apache-7.pom.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/org/apache/apache/7/apache-7.pom[0m
-[0m[[0mdebug[0m] [0m	[SUCCESSFUL ] org.apache#apache;7!apache.pom(pom.original) (208ms)[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/org.apache/apache/7/jars/apache.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.apache/apache/7/jars/apache.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/org.apache/apache/7/jars/apache.jar[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/org/apache/apache/7/apache-7.jar[0m
-[0m[[0mdebug[0m] [0mCLIENT ERROR: Not Found url=https://repo1.maven.org/maven2/org/apache/apache/7/apache-7.jar[0m
-[0m[[0mdebug[0m] [0m		tried http://repo.typesafe.com/typesafe/releases/org/apache/apache/7/apache-7.jar[0m
-[0m[[0mdebug[0m] [0mCLIENT ERROR: Not Found url=http://repo.typesafe.com/typesafe/releases/org/apache/apache/7/apache-7.jar[0m
-[0m[[0mdebug[0m] [0m		tried http://repo.typesafe.com/typesafe/ivy-releases/org.apache/apache/7/jars/apache.jar[0m
-[0m[[0mdebug[0m] [0mCLIENT ERROR: Not Found url=http://repo.typesafe.com/typesafe/ivy-releases/org.apache/apache/7/jars/apache.jar[0m
-[0m[[0mdebug[0m] [0m		tried http://repo.spray.io/org/apache/apache/7/apache-7.jar[0m
-[0m[[0mdebug[0m] [0mCLIENT ERROR: Not Found url=http://repo.spray.io/org/apache/apache/7/apache-7.jar[0m
-[0m[[0mdebug[0m] [0m		tried http://repo.typesafe.com/typesafe/releases/org/apache/apache/7/apache-7.jar[0m
-[0m[[0mdebug[0m] [0mCLIENT ERROR: Not Found url=http://repo.typesafe.com/typesafe/releases/org/apache/apache/7/apache-7.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/org.apache.commons/commons-parent/17/jars/commons-parent.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.apache.commons/commons-parent/17/jars/commons-parent.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/org.apache.commons/commons-parent/17/jars/commons-parent.jar[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/org/apache/commons/commons-parent/17/commons-parent-17.jar[0m
-[0m[[0mdebug[0m] [0mCLIENT ERROR: Not Found url=https://repo1.maven.org/maven2/org/apache/commons/commons-parent/17/commons-parent-17.jar[0m
-[0m[[0mdebug[0m] [0m		tried http://repo.typesafe.com/typesafe/releases/org/apache/commons/commons-parent/17/commons-parent-17.jar[0m
-[0m[[0mdebug[0m] [0mCLIENT ERROR: Not Found url=http://repo.typesafe.com/typesafe/releases/org/apache/commons/commons-parent/17/commons-parent-17.jar[0m
-[0m[[0mdebug[0m] [0m		tried http://repo.typesafe.com/typesafe/ivy-releases/org.apache.commons/commons-parent/17/jars/commons-parent.jar[0m
-[0m[[0mdebug[0m] [0mCLIENT ERROR: Not Found url=http://repo.typesafe.com/typesafe/ivy-releases/org.apache.commons/commons-parent/17/jars/commons-parent.jar[0m
-[0m[[0mdebug[0m] [0m		tried http://repo.spray.io/org/apache/commons/commons-parent/17/commons-parent-17.jar[0m
-[0m[[0mdebug[0m] [0mCLIENT ERROR: Not Found url=http://repo.spray.io/org/apache/commons/commons-parent/17/commons-parent-17.jar[0m
-[0m[[0mdebug[0m] [0m		tried http://repo.typesafe.com/typesafe/releases/org/apache/commons/commons-parent/17/commons-parent-17.jar[0m
-[0m[[0mdebug[0m] [0mCLIENT ERROR: Not Found url=http://repo.typesafe.com/typesafe/releases/org/apache/commons/commons-parent/17/commons-parent-17.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/commons-lang/commons-lang/2.6/jars/commons-lang.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/commons-lang/commons-lang/2.6/jars/commons-lang.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/commons-lang/commons-lang/2.6/jars/commons-lang.jar[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.jar[0m
-[0m[[0mdebug[0m] [0m	found commons-lang#commons-lang;2.6 in public[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: commons-lang#commons-lang;2.6[0m
+[0m[[0mdebug[0m] [0m	found commons-lang#commons-lang;2.6 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->commons-lang#commons-lang;2.6 [compile->runtime][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->commons-lang#commons-lang;2.6 [compile->compile][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->commons-lang#commons-lang;2.6 [compile->master][0m
@@ -1841,15 +1613,8 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->org.scala-lang#scala-compiler;2.11.2 [scala-tool->default][0m
 [0m[[0minfo[0m] [0mResolving org.scala-lang#scala-compiler;2.11.2 ...[0m
 [0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: org.scala-lang#scala-compiler;2.11.2 {scala-tool=[default, optional(default)]}[0m
-[0m[[0minfo[0m] [0mResolving org.scala-lang#scala-compiler;2.11.2 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: org.scala-lang#scala-compiler;2.11.2 {scala-tool=[default, optional(default)]}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/org.scala-lang/scala-compiler/2.11.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for org.scala-lang#scala-compiler;2.11.2[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.scala-lang/scala-compiler/2.11.2/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: found md file for org.scala-lang#scala-compiler;2.11.2[0m
-[0m[[0mdebug[0m] [0m		=> /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.scala-lang/scala-compiler/2.11.2/ivys/ivy.xml (2.11.2)[0m
-[0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#scala-compiler;2.11.2!ivy.xml(ivy.original)[0m
-[0m[[0mdebug[0m] [0m	found org.scala-lang#scala-compiler;2.11.2 in activator-local[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.scala-lang#scala-compiler;2.11.2[0m
+[0m[[0mdebug[0m] [0m	found org.scala-lang#scala-compiler;2.11.2 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->org.scala-lang#scala-compiler;2.11.2 [scala-tool->runtime][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->org.scala-lang#scala-compiler;2.11.2 [scala-tool->compile][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-compiler;2.11.2->org.scala-lang#scala-library;2.11.2 [compile->master(compile)][0m
@@ -1909,30 +1674,8 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-compiler;2.11.2->jline#jline;2.12 [optional->master(compile)][0m
 [0m[[0minfo[0m] [0mResolving jline#jline;2.12 ...[0m
 [0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: jline#jline;2.12 {optional=[compile(*), master(compile)]}[0m
-[0m[[0minfo[0m] [0mResolving jline#jline;2.12 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain-delegate: Checking cache for: dependency: jline#jline;2.12 {optional=[compile(*), master(compile)]}[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/jline/jline/2.12/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	local: no ivy file found for jline#jline;2.12[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/jline/jline/2.12/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-local: no ivy file found for jline#jline;2.12[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/jline/jline/2.12/ivys/ivy.xml[0m
-[0m[[0mdebug[0m] [0m	activator-launcher-local: no ivy file found for jline#jline;2.12[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/jline/jline/2.12/jline-2.12.pom[0m
-[0m[[0mdebug[0m] [0m	public: found md file for jline#jline;2.12[0m
-[0m[[0mdebug[0m] [0m		=> https://repo1.maven.org/maven2/jline/jline/2.12/jline-2.12.pom (2.12)[0m
-[0m[[0mdebug[0m] [0mdownloading https://repo1.maven.org/maven2/jline/jline/2.12/jline-2.12.pom ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/jline/jline/2.12/jline-2.12.pom[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/jline/jline/2.12/jline-2.12.pom.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/jline/jline/2.12/jline-2.12.pom[0m
-[0m[[0mdebug[0m] [0m	[SUCCESSFUL ] jline#jline;2.12!jline.pom(pom.original) (240ms)[0m
-[0m[[0minfo[0m] [0mResolving org.sonatype.oss#oss-parent;7 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: dependency: org.sonatype.oss#oss-parent;7 {}[0m
-[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.sonatype.oss#oss-parent;7[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.ivy2/local/jline/jline/2.12/jars/jline.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/jline/jline/2.12/jars/jline.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/.activator/repository/jline/jline/2.12/jars/jline.jar[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/jline/jline/2.12/jline-2.12.jar[0m
-[0m[[0mdebug[0m] [0m	found jline#jline;2.12 in public[0m
+[0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: jline#jline;2.12[0m
+[0m[[0mdebug[0m] [0m	found jline#jline;2.12 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m== resolving dependencies org.scala-lang#scala-compiler;2.11.2->jline#jline;2.12 [optional->compile(*)][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->org.scala-lang#scala-library;2.11.2 [scala-tool->default][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->org.scala-lang#scala-library;2.11.2 [scala-tool->runtime][0m
@@ -1941,66 +1684,24 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies facebookapp#facebookapp_2.11;1.0->org.scala-lang#scala-library;2.11.2 [scala-tool->optional(default)][0m
 [0m[[0mdebug[0m] [0m	resolved ivy file produced in cache[0m
 [0m[[0mdebug[0m] [0m:: downloading artifacts ::[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.scala-lang/scala-library/2.11.2/jars/scala-library.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#scala-library;2.11.2!scala-library.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang.modules#scala-xml_2.11;1.0.2!scala-xml_2.11.jar(bundle)[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] io.spray#spray-can_2.11;1.3.2!spray-can_2.11.jar(bundle)[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/io/spray/spray-routing_2.11/1.3.2/spray-routing_2.11-1.3.2.jar[0m
-[0m[[0minfo[0m] [0mdownloading https://repo1.maven.org/maven2/io/spray/spray-routing_2.11/1.3.2/spray-routing_2.11-1.3.2.jar ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-routing_2.11/1.3.2/spray-routing_2.11-1.3.2.jar[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-routing_2.11/1.3.2/spray-routing_2.11-1.3.2.jar.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/io/spray/spray-routing_2.11/1.3.2/spray-routing_2.11-1.3.2.jar[0m
-[0m[[0minfo[0m] [0m	[SUCCESSFUL ] io.spray#spray-routing_2.11;1.3.2!spray-routing_2.11.jar(bundle) (2412ms)[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/io/spray/spray-client_2.11/1.3.2/spray-client_2.11-1.3.2.jar[0m
-[0m[[0minfo[0m] [0mdownloading https://repo1.maven.org/maven2/io/spray/spray-client_2.11/1.3.2/spray-client_2.11-1.3.2.jar ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-client_2.11/1.3.2/spray-client_2.11-1.3.2.jar[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-client_2.11/1.3.2/spray-client_2.11-1.3.2.jar.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/io/spray/spray-client_2.11/1.3.2/spray-client_2.11-1.3.2.jar[0m
-[0m[[0minfo[0m] [0m	[SUCCESSFUL ] io.spray#spray-client_2.11;1.3.2!spray-client_2.11.jar(bundle) (279ms)[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/io/spray/spray-json_2.11/1.3.1/spray-json_2.11-1.3.1.jar[0m
-[0m[[0minfo[0m] [0mdownloading https://repo1.maven.org/maven2/io/spray/spray-json_2.11/1.3.1/spray-json_2.11-1.3.1.jar ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-json_2.11/1.3.1/spray-json_2.11-1.3.1.jar[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-json_2.11/1.3.1/spray-json_2.11-1.3.1.jar.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/io/spray/spray-json_2.11/1.3.1/spray-json_2.11-1.3.1.jar[0m
-[0m[[0minfo[0m] [0m	[SUCCESSFUL ] io.spray#spray-json_2.11;1.3.1!spray-json_2.11.jar(bundle) (801ms)[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.7/akka-actor_2.11-2.3.7.jar[0m
-[0m[[0minfo[0m] [0mdownloading https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.7/akka-actor_2.11-2.3.7.jar ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.7/akka-actor_2.11-2.3.7.jar[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.7/akka-actor_2.11-2.3.7.jar.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.7/akka-actor_2.11-2.3.7.jar[0m
-[0m[[0minfo[0m] [0m	[SUCCESSFUL ] com.typesafe.akka#akka-actor_2.11;2.3.7!akka-actor_2.11.jar (3543ms)[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/com/typesafe/akka/akka-remote_2.11/2.3.7/akka-remote_2.11-2.3.7.jar[0m
-[0m[[0minfo[0m] [0mdownloading https://repo1.maven.org/maven2/com/typesafe/akka/akka-remote_2.11/2.3.7/akka-remote_2.11-2.3.7.jar ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/com/typesafe/akka/akka-remote_2.11/2.3.7/akka-remote_2.11-2.3.7.jar[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/com/typesafe/akka/akka-remote_2.11/2.3.7/akka-remote_2.11-2.3.7.jar.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/com/typesafe/akka/akka-remote_2.11/2.3.7/akka-remote_2.11-2.3.7.jar[0m
-[0m[[0minfo[0m] [0m	[SUCCESSFUL ] com.typesafe.akka#akka-remote_2.11;2.3.7!akka-remote_2.11.jar (1000ms)[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.jar[0m
-[0m[[0minfo[0m] [0mdownloading https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.jar ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.jar[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.jar.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/commons-lang/commons-lang/2.6/commons-lang-2.6.jar[0m
-[0m[[0minfo[0m] [0m	[SUCCESSFUL ] commons-lang#commons-lang;2.6!commons-lang.jar (219ms)[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] io.spray#spray-routing_2.11;1.3.2!spray-routing_2.11.jar(bundle)[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] io.spray#spray-client_2.11;1.3.2!spray-client_2.11.jar(bundle)[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] io.spray#spray-json_2.11;1.3.1!spray-json_2.11.jar(bundle)[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] com.typesafe.akka#akka-actor_2.11;2.3.7!akka-actor_2.11.jar[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] com.typesafe.akka#akka-remote_2.11;2.3.7!akka-remote_2.11.jar[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] commons-lang#commons-lang;2.6!commons-lang.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] io.spray#spray-io_2.11;1.3.2!spray-io_2.11.jar(bundle)[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] io.spray#spray-http_2.11;1.3.2!spray-http_2.11.jar(bundle)[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] io.spray#spray-util_2.11;1.3.2!spray-util_2.11.jar(bundle)[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.parboiled#parboiled-scala_2.11;1.1.6!parboiled-scala_2.11.jar(bundle)[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.parboiled#parboiled-core;1.1.6!parboiled-core.jar(bundle)[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/io/spray/spray-httpx_2.11/1.3.2/spray-httpx_2.11-1.3.2.jar[0m
-[0m[[0minfo[0m] [0mdownloading https://repo1.maven.org/maven2/io/spray/spray-httpx_2.11/1.3.2/spray-httpx_2.11-1.3.2.jar ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-httpx_2.11/1.3.2/spray-httpx_2.11-1.3.2.jar[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/io/spray/spray-httpx_2.11/1.3.2/spray-httpx_2.11-1.3.2.jar.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/io/spray/spray-httpx_2.11/1.3.2/spray-httpx_2.11-1.3.2.jar[0m
-[0m[[0minfo[0m] [0m	[SUCCESSFUL ] io.spray#spray-httpx_2.11;1.3.2!spray-httpx_2.11.jar(bundle) (398ms)[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] io.spray#spray-httpx_2.11;1.3.2!spray-httpx_2.11.jar(bundle)[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] com.chuusai#shapeless_2.11;1.2.4!shapeless_2.11.jar[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.jvnet.mimepull/mimepull/1.9.4/jars/mimepull.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.jvnet.mimepull#mimepull;1.9.4!mimepull.jar[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.4/scala-library-2.11.4.jar[0m
-[0m[[0minfo[0m] [0mdownloading https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.4/scala-library-2.11.4.jar ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.4/scala-library-2.11.4.jar[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.4/scala-library-2.11.4.jar.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.11.4/scala-library-2.11.4.jar[0m
-[0m[[0minfo[0m] [0m	[SUCCESSFUL ] org.scala-lang#scala-library;2.11.4!scala-library.jar (2316ms)[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#scala-library;2.11.4!scala-library.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] com.typesafe#config;1.2.1!config.jar(bundle)[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] io.netty#netty;3.8.0.Final!netty.jar(bundle)[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] com.google.protobuf#protobuf-java;2.5.0!protobuf-java.jar(bundle)[0m
@@ -2013,17 +1714,11 @@
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#scala-reflect;2.11.0!scala-reflect.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang.modules#scala-parser-combinators_2.11;1.0.1!scala-parser-combinators_2.11.jar(bundle)[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scalaz#scalaz-effect_2.11;7.0.6!scalaz-effect_2.11.jar(bundle)[0m
-[0m[[0mdebug[0m] [0m		tried /Users/vipulmittal/Documents/fall-2015/activator-dist-1.3.6/repository/org.scala-lang/scala-compiler/2.11.2/jars/scala-compiler.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#scala-compiler;2.11.2!scala-compiler.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#scala-reflect;2.11.2!scala-reflect.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang.modules#scala-parser-combinators_2.11;1.0.2!scala-parser-combinators_2.11.jar(bundle)[0m
-[0m[[0mdebug[0m] [0m		tried https://repo1.maven.org/maven2/jline/jline/2.12/jline-2.12.jar[0m
-[0m[[0minfo[0m] [0mdownloading https://repo1.maven.org/maven2/jline/jline/2.12/jline-2.12.jar ...[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/jline/jline/2.12/jline-2.12.jar[0m
-[0m[[0mdebug[0m] [0m	public: downloading https://repo1.maven.org/maven2/jline/jline/2.12/jline-2.12.jar.sha1[0m
-[0m[[0mdebug[0m] [0msha1 OK for https://repo1.maven.org/maven2/jline/jline/2.12/jline-2.12.jar[0m
-[0m[[0minfo[0m] [0m	[SUCCESSFUL ] jline#jline;2.12!jline.jar (162ms)[0m
-[0m[[0mdebug[0m] [0m:: resolution report :: resolve 8342ms :: artifacts dl 11161ms[0m
+[0m[[0mdebug[0m] [0m	[NOT REQUIRED] jline#jline;2.12!jline.jar[0m
+[0m[[0mdebug[0m] [0m:: resolution report :: resolve 1347ms :: artifacts dl 35ms[0m
 [0m[[0mdebug[0m] [0m	report for facebookapp#facebookapp_2.11;1.0 compile produced in /Users/vipulmittal/Documents/fall-2015/dos/final_project/Facebook/target/resolution-cache/reports/facebookapp-facebookapp_2.11-compile.xml[0m
 [0m[[0mdebug[0m] [0m	report for facebookapp#facebookapp_2.11;1.0 runtime produced in /Users/vipulmittal/Documents/fall-2015/dos/final_project/Facebook/target/resolution-cache/reports/facebookapp-facebookapp_2.11-runtime.xml[0m
 [0m[[0mdebug[0m] [0m	report for facebookapp#facebookapp_2.11;1.0 test produced in /Users/vipulmittal/Documents/fall-2015/dos/final_project/Facebook/target/resolution-cache/reports/facebookapp-facebookapp_2.11-test.xml[0m
@@ -2037,7 +1732,7 @@
 [0m[[0mdebug[0m] [0m	report for facebookapp#facebookapp_2.11;1.0 docs produced in /Users/vipulmittal/Documents/fall-2015/dos/final_project/Facebook/target/resolution-cache/reports/facebookapp-facebookapp_2.11-docs.xml[0m
 [0m[[0mdebug[0m] [0m	report for facebookapp#facebookapp_2.11;1.0 pom produced in /Users/vipulmittal/Documents/fall-2015/dos/final_project/Facebook/target/resolution-cache/reports/facebookapp-facebookapp_2.11-pom.xml[0m
 [0m[[0mdebug[0m] [0m	report for facebookapp#facebookapp_2.11;1.0 scala-tool produced in /Users/vipulmittal/Documents/fall-2015/dos/final_project/Facebook/target/resolution-cache/reports/facebookapp-facebookapp_2.11-scala-tool.xml[0m
-[0m[[0mdebug[0m] [0m	resolve done (8342ms resolve - 11161ms download)[0m
+[0m[[0mdebug[0m] [0m	resolve done (1347ms resolve - 35ms download)[0m
 [0m[[0minfo[0m] [0mDone updating.[0m
 [0m[[33mwarn[0m] [0mScala version was updated by one of library dependencies:[0m
 [0m[[33mwarn[0m] [0m	* org.scala-lang:scala-library:(2.11.2, 2.11.0, 2.11.1) -> 2.11.4[0m

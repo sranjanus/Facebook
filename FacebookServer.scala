@@ -164,6 +164,7 @@ object FacebookServer extends JsonFormats{
 		case class GetPages(userId:String)
 		case class PostComment(userId:String,message:String,postId:String)
 		case class GetPostDetails(postId:String)
+		case class GetFriendRequests(userId:String)
 	}
 
 	class Server extends Actor {

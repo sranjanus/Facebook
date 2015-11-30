@@ -229,7 +229,7 @@ object FacebookClient extends JsonFormats {
     def CreateAccount = {
     	var clientInfo = generateUserInfo()
     	val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
-    	val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/createAccount", entity = HttpEntity(ContentTypes.`application/json`, UserInfo(clientInfo.userId, clientInfo.uname, clientInfo.udob, clientInfo.uemail, clientInfo.ukey).toJson.toString))
+    	val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/createAccount", entity = HttpEntity(ContentTypes.`application/json`, UserInfo(clientInfo.uname, clientInfo.udob, clientInfo.uemail, clientInfo.ukey).toJson.toString))
     	val responseFuture: Future[String] = pipeline(request)
     		responseFuture onComplete {
     			case Success(result) =>
@@ -275,14 +275,14 @@ object FacebookClient extends JsonFormats {
         }
         runEvent()
 
-      case Msg(rId: String) =>
-        val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
-        val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/msg", entity = HttpEntity(ContentTypes.`application/json`, SendMsg(id, System.currentTimeMillis(), generatePost(), rId).toJson.toString))
-        val responseFuture: Future[String] = pipeline(request)
-        responseFuture onComplete {
-          case Success(str) =>
-          case Failure(error) =>
-        }
+      // case Msg(rId: String) =>
+      //   val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
+      //   val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/msg", entity = HttpEntity(ContentTypes.`application/json`, SendMsg(id, System.currentTimeMillis(), generatePost(), rId).toJson.toString))
+      //   val responseFuture: Future[String] = pipeline(request)
+      //   responseFuture onComplete {
+      //     case Success(str) =>
+      //     case Failure(error) =>
+      //   }
 
       case SendFriendRequest(rId: String) =>
       	val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
