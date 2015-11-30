@@ -55,7 +55,7 @@ object FacebookServer extends JsonFormats{
 		var likes: ConcurrentHashMap[String, Long] = new ConcurrentHashMap()
 	}
 
-	class Messages(sid: Int, rid: Int, mid: String, msg: String, time: Long){
+	class Messages(sid: String, rid: String, mid: String, msg: String, time: Long){
 		var senderId = sid
 		var recepientId = rid
 		var message = msg
@@ -137,14 +137,15 @@ object FacebookServer extends JsonFormats{
 		case class LoginUser(uName: String, pass: String)
 		case class AddPost(userId: String, time: Long, msg: String)
 		case class PagePost(userId: String, time: Long, msg: String)
-		case class AddMsg(sId: Int, time: Long, msg: String, rId: Int)
+		case class AddMsg(sId: String, time: Long, msg: String, rId: String)
 		case class SendMessages(userId: String)
 		case class SendNewsfeed(userId: String)
 		case class SendTimeline(userId: String)
 		case class SendFriends(userId: String)
 		case class SendUserProfile(userId: String)
-		case class AddFriendRequest(userId:String,friendId: String,key:String)
-		case class AcceptFriendRequest(userId:String,friendId: String,key:String)
+		case class AddFriendRequest(userId: String,friendId: String,key:String)
+		case class AcceptFriendRequest(userId: String,friendId: String,key:String)
+		case class GetFriendRequests(userId: String)
 		case class CreatePage(name:String,details:String,createrId:String)
 		case class PageInfo(id:String)
 		case class GetPagePosts(id:String)
@@ -152,6 +153,7 @@ object FacebookServer extends JsonFormats{
 		case class LikePost(userId:String,postId:String,time:Long)
 		case class AddPicture(userId:String,picture:String)
 		case class GetAlbum(userId:String)
+		case class SearchUsers(userNamePat: String)
 	}
 
 	class Server extends Actor {
@@ -168,8 +170,6 @@ object FacebookServer extends JsonFormats{
 
 		// Receive block for the server.
 		final def receive = LoggingReceive {
-
-
 			case GetAlbum(userId) => 
 				if(users.containsKey(userId)){
 					var pictures: ArrayBuffer[String] = ArrayBuffer.empty
@@ -221,6 +221,19 @@ object FacebookServer extends JsonFormats{
 					sender ! Response("FAILED","","Invalid user").toJson.toString					
 				}
 
+			case GetFriendRequests(userId) =>
+				var user = users.get(userId)
+				var requests: ArrayBuffer[FriendRequest] = ArrayBuffer.empty
+				var fRequests = user.friendRequests
+				var iter = fRequests.keySet().iterator()
+				while(iter.hasNext()){
+					var fId = iter.next()
+					var key = fRequests.get(fId)
+					var request = FriendRequest(fId, userId, key)
+					requests += request
+				}
+
+				sender ! requests.toList.toJson.toString
 
 			case AcceptFriendRequest(userId,friendId,key) =>
 				var friend = users.get(friendId)
@@ -250,6 +263,18 @@ object FacebookServer extends JsonFormats{
 				var userProfile = UserProfile(userId+"",obj.userName, obj.dateOfBirth, obj.emailAdd)
 				var json = userProfile.toJson.toString
 				sender ! json
+
+			case SearchUsers(userNamePat) =>
+				println(userNamePat)
+				var matchedUsers: ArrayBuffer[UserProfile] = ArrayBuffer.empty
+				var iterator = users.keySet().iterator();
+				while(iterator.hasNext()){
+					var obj = users.get(iterator.next())
+					if(obj.userName startsWith userNamePat){
+						matchedUsers  += UserProfile(obj.userId+"", obj.userName, obj.dateOfBirth, obj.emailAdd)
+					}
+				}
+				sender ! matchedUsers.toList.toJson.toString
 			
 
 			case SendFriends(userId) =>

@@ -15,9 +15,9 @@ import spray.json.pimpAny
 trait JsonFormats extends DefaultJsonProtocol {
   case class SendPost(userId: String, time: Long, msg: String)
   case class UserProfile(userId:String,uname: String, dob: String, email: String)
-  case class UserInfo(uname: String, dob: String, email: String, key: String)
-  case class SendMsg(senderId: Int, time: Long, msg: String, recepientId: Int)
-  case class SendFriendRequest(senderId: String, recepientId: String,key:String)
+  case class UserInfo(userId: String, uname: String, dob: String, email: String, key: String)
+  case class SendMsg(senderId: String, time: Long, msg: String, recepientId: String)
+  case class FriendRequest(senderId: String, recepientId: String,key:String)
   case class GetPost(postId:String,userId: String, time: Long, msg: String,likes:Int)
   case class CreatePageInfo(name:String,details:String,createrId:String)
   case class SendPageInfo(id:String,name:String,details:String,createrId:String,likes:Int,post:Int)
@@ -30,9 +30,9 @@ trait JsonFormats extends DefaultJsonProtocol {
 
   implicit val postFormat = jsonFormat3(SendPost)
   implicit val userProfileFormat = jsonFormat4(UserProfile)
-  implicit val userInfoFormat = jsonFormat4(UserInfo)
+  implicit val userInfoFormat = jsonFormat5(UserInfo)
   implicit val msgFormat = jsonFormat4(SendMsg)
-  implicit val friendRequestFormat = jsonFormat3(SendFriendRequest)
+  implicit val friendRequestFormat = jsonFormat3(FriendRequest)
   implicit val getPostFormat = jsonFormat5(GetPost)
   implicit val createPageFormat = jsonFormat3(CreatePageInfo)
   implicit val sendPageInfoFormat = jsonFormat6(SendPageInfo)
@@ -69,8 +69,8 @@ trait JsonFormats extends DefaultJsonProtocol {
       "recepientId" -> JsNumber(c.recepientId))
     def read(value: JsValue) = {
       value.asJsObject.getFields("msgId", "senderId", "message", "timeStamp", "recepientId") match {
-        case Seq(JsString(msgId), JsNumber(senderId), JsString(message), JsString(timeStamp), JsNumber(recepientId)) =>
-          new FacebookServer.Messages(senderId.toInt, recepientId.toInt, msgId, message, timeStamp.toLong)
+        case Seq(JsString(msgId), JsString(senderId), JsString(message), JsString(timeStamp), JsString(recepientId)) =>
+          new FacebookServer.Messages(senderId, recepientId, msgId, message, timeStamp.toLong)
         case _ => throw new DeserializationException("Messages expected")
       }
     }

@@ -107,7 +107,7 @@ object HttpServer extends JsonFormats {
 
 			case HttpRequest(POST, Uri.Path("/sendFriendRequest"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
 
-				val info = entity.data.asString.parseJson.convertTo[SendFriendRequest]
+				val info = entity.data.asString.parseJson.convertTo[FriendRequest]
 				var client = sender
 				val result = (server ? FacebookServer.Server.AddFriendRequest(info.senderId, info.recepientId,info.key)).mapTo[String]
 				result onSuccess {
@@ -118,7 +118,7 @@ object HttpServer extends JsonFormats {
 
 			case HttpRequest(POST, Uri.Path("/acceptFriendRequest"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
 
-				val info = entity.data.asString.parseJson.convertTo[SendFriendRequest]
+				val info = entity.data.asString.parseJson.convertTo[FriendRequest]
 				var client = sender
 				val result = (server ? FacebookServer.Server.AcceptFriendRequest(info.senderId, info.recepientId,info.key)).mapTo[String]
 				result onSuccess {
@@ -228,6 +228,21 @@ object HttpServer extends JsonFormats {
 				var id = path.split("/").last.toString
 				var client = sender
 				val result = (server ? FacebookServer.Server.SendFriends(id)).mapTo[String]
+				result onSuccess {
+					case result =>
+						val body = HttpEntity(ContentTypes.`application/json`, result)
+						client ! HttpResponse(entity = body)
+				}
+
+			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/getFriendRequests" =>
+				var id = path.split("/").last.toString
+				var client = sender
+				val result = (server ? FacebookServer.Server)
+
+			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/searchUsers" =>
+				var pattern = path.split("/").last.toString
+				var client = sender
+				var result = (server ? FacebookServer.Server.SearchUsers(pattern)).mapTo[String]
 				result onSuccess {
 					case result =>
 						val body = HttpEntity(ContentTypes.`application/json`, result)
