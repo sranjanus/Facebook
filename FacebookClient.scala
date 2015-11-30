@@ -1,5 +1,7 @@
 package com.FacebookApp
 
+import java.util.concurrent.ConcurrentLinkedQueue
+
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
@@ -66,13 +68,12 @@ object FacebookClient extends JsonFormats {
     val pdf = new PDF()
     val rnd = new Random
 
-    // 307 => mean (avg tweets per user).	sample(size) => size is the no of Users.
     var PostsPerUser = pdf.exponential(1.0 / 307.0).sample(noOfUsers).map(_.toInt)
     PostsPerUser = PostsPerUser.sortBy(a => a)
 
-    // calculate duration required to produce given tweets at given rate.
+    // calculate duration required to produce given posts at a given rate.
     var duration = PostsPerUser.sum / avgPostsPerSecond
-    println(duration)
+    //println(duration)
 
     // get times for 5% of duration. Duration is relative -> 1 to N
     var percent5 = (duration * 0.05).toInt
@@ -95,7 +96,7 @@ object FacebookClient extends JsonFormats {
       var port = initPort + rnd.nextInt(noOfPorts)
       var node = actorOf(Props(new Client()), name = "" + i)
 
-      // Initialize Clients with info like #Posts, duration of posts, start Time, router address. 
+      // Initialize Clients with info like number of Posts, duration of posts, start Time, router address. 
       node ! Client.Init(PostsPerUser(i), duration, indexes, absoluteStartTime, port)
       
       var delay = noOfUsers * 1000
@@ -155,6 +156,8 @@ object FacebookClient extends JsonFormats {
     case object GetNewsfeed
     case object GetTimeline
     case object GetFriends
+    case object LikePost
+    case object CommentPost
     case object Stop
   }
 
@@ -183,10 +186,12 @@ object FacebookClient extends JsonFormats {
 
     var clientInfo = new ClientInfo("", "", "", "", "")
 
+    var newsfeedStore = ArrayBuffer.empty[GetPost]
+
     def Initialize(avgNoOfPosts: Int, duration: Int, indexes: ArrayBuffer[Int]) {
       val pdf = new PDF()
 
-      // Generate Timeline for tweets for given duration. Std. Deviation = Mean/4 (25%),	Mean = TweetsPerUser(i)
+      // Generate Timeline for posts for given duration. Std. Deviation = Mean/4 (25%),	Mean = PostsPerUser(i)
       var mean = avgNoOfPosts / duration.toDouble
       var postspersecond = pdf.gaussian.map(_ * (mean / 4) + mean).sample(duration).map(a => Math.round(a).toInt)
       var skewedRate = postspersecond.sortBy(a => a).takeRight(indexes.length).map(_ * 2) // double value of 10% of largest values to simulate peaks.
@@ -254,12 +259,13 @@ object FacebookClient extends JsonFormats {
     				if(resp.status == "SUCCESS"){
     					clientInfo.userId = resp.id
     					id = resp.id
-    					system.actorSelection("akka.tcp://FacebookClients@" + ipAddress + ":13000/user/Watcher") ! Watcher.AddUserId(resp.id)
+    					system.actorSelection("akka.tcp://FacebookClients@" + ipAddress + ":8080/user/Watcher") ! Watcher.AddUserId(resp.id)
     					println("User " + resp.id + " created!!!")
 
     					var relative = (absTime - System.currentTimeMillis()).toInt
-        				cancellable = system.scheduler.schedule(relative milliseconds, 5 second, self, GetNewsfeed)
-        				runEvent()
+        				cancellable = system.scheduler.schedule(relative milliseconds, 1 second, self, GetNewsfeed)
+                mCancellable = system.scheduler.schedule((relative + 10) milliseconds, 1 second, self, LikePost)
+                runEvent()
     				}
 
     			case Failure(error) =>
@@ -283,9 +289,9 @@ object FacebookClient extends JsonFormats {
           responseFuture onComplete {
             case Success(result) =>
             	var resp = result.parseJson.convertTo[Response]
-    				println("Adding Post: " + resp.status + ": " + resp.message)
+    				  println("Adding Post: " + resp.status + ": " + resp.message)
     				if(resp.status == "SUCCESS"){
-    					println("Post " + resp.id + "created by " + id + "!!!")
+    				  //println("Post " + resp.id + " created by " + id + "!!!")
     				}
             case Failure(error) =>
     				println("Adding Post: " + error)
@@ -309,9 +315,9 @@ object FacebookClient extends JsonFormats {
       	responseFuture onComplete {
       		case Success(result) =>
             	var resp = result.parseJson.convertTo[Response]
-    				println("Sending Friend Request: " + resp.status + ": " + resp.message)
+    				  println("Sending Friend Request: " + resp.status + ": " + resp.message)
     				if(resp.status == "SUCCESS"){
-    					println("Friend request sent!!")
+    					 println("Friend request sent!!")
     				}
             case Failure(error) =>
     				println("Sending Friend Request : " + error)
@@ -323,15 +329,35 @@ object FacebookClient extends JsonFormats {
       	val responseFuture: Future[String] = pipeline(request)
       	responseFuture onComplete {
       		case Success(result) =>
-            	var resp = result.parseJson.convertTo[Response]
-    				println("Accepting Friend Request: " + resp.status + ": " + resp.message)
+            var resp = result.parseJson.convertTo[Response]
+    				  println("Accepting Friend Request: " + resp.status + ": " + resp.message)
     				if(resp.status == "SUCCESS"){
-    					println("Friend request accepted!!")
+    					 println("Friend request accepted!!")
     				}
             case Failure(error) =>
     				println("Accepting Friend Request: " + error)
       	}
 
+      case LikePost =>
+        println("newsfeedStore.size = " + newsfeedStore.size)
+        if(newsfeedStore.size > 0){
+          var randomIndex = rand.nextInt(newsfeedStore.size)
+          var post = newsfeedStore(randomIndex)
+          val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
+          val request = HttpRequest(method = POST, uri="http://" + ipAddress + ":" + port + "/likePost", entity = HttpEntity(ContentTypes.`application/json`, SendLikePost(id, post.postId, System.currentTimeMillis).toJson.toString))
+          val responseFuture: Future[String] = pipeline(request)
+          responseFuture onComplete {
+              case Success(result) =>
+                var resp = result.parseJson.convertTo[Response]
+                println("Liking Post: " + resp.status + ": " + resp.message)
+                if(resp.status == "SUCCESS"){
+                  println("Post Liked!!")
+                }
+              case Failure(error) =>
+                println("Liking Post: " + error)
+            }
+        }
+     
       case GetMessages =>
         val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
         val request = HttpRequest(method = GET, uri = "http://" + ipAddress + ":" + port + "/msg/" + id)
@@ -351,7 +377,13 @@ object FacebookClient extends JsonFormats {
           case Success(result) =>
           	println("Fetching Newsfeed: SUCCESS")
           	println(result)
-            val posts = result.entity.data.asString.parseJson.convertTo[List[GetPost]]
+            var newsfeedList = result.entity.data.asString.parseJson.convertTo[List[GetPost]]
+            var iter = newsfeedList.iterator
+            while(iter.hasNext){
+              var post = iter.next()
+              newsfeedStore += post
+            }
+            println("newsfeedStore SIZE = " + newsfeedStore.size)
           case Failure(error) =>
           	println("Fetching Newsfeed: " + error)
         }
@@ -398,6 +430,7 @@ object FacebookClient extends JsonFormats {
 
       case Stop =>
         cancellable.cancel
+        mCancellable.cancel
         context.stop(self)
 
       case _ => println("FAILED")

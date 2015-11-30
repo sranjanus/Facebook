@@ -85,16 +85,6 @@ object FacebookServer extends JsonFormats{
 	var msgStore: ConcurrentHashMap[String, Messages] = new ConcurrentHashMap()
 	var pageStore: ConcurrentHashMap[String, Page] = new ConcurrentHashMap()
 
-	// def main(args: Array[String]){
-	// 	// create an actor system
-	// 	val system = ActorSystem("FacebookServer", ConfigFactory.load(ConfigFactory.parseString("""{ "akka" : { "actor" : { "provider" : "akka.remote.RemoteActorRefProvider" }, "remote" : { "enabled-transports" : [ "akka.remote.netty.tcp" ], "netty" : { "tcp" : { "port" : 12000 , "maximum-frame-size" : 12800000b } } } } } """)))		
-	
-	// 	val watcher = system.actorOf(Props(new Watcher()), name = "Watcher")
-
- //    	watcher ! FacebookServer.Watcher.Init
-
-	// }
-
 	object Watcher {
     	case object Init
     	case object Time
@@ -105,7 +95,7 @@ object FacebookServer extends JsonFormats{
     import context._
 
     // scheduler to count no. of tweets every 5 seconds.
-    var cancellable = system.scheduler.schedule(0 seconds, 5000 milliseconds, self, Time)
+    var cancellable = system.scheduler.schedule(0 seconds, 1000 milliseconds, self, Time)
 
     // Start a router with 30 Actors in the Server.
     var cores = (Runtime.getRuntime().availableProcessors() * 1.5).toInt
@@ -302,13 +292,11 @@ object FacebookServer extends JsonFormats{
 				var newUserId = userIds.addAndGet(1).toString
 				var newUser = new User(newUserId+"", uName, dob, email,key)
 				users.put(newUserId+"",newUser)
-				println("User "+newUserId);
 				sender ! Response("SUCCESS",newUserId+"","").toJson.toString			
 
 
 			case SendUserProfile(userId) =>
 				if(users.containsKey(userId)){
-					println(userId);
 					rdCtr.addAndGet(1)
 					var obj = users.get(userId+"")
 					var userProfile = UserProfile(userId+"",obj.userName, obj.dateOfBirth, obj.emailAdd)

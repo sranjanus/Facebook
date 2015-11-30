@@ -74,7 +74,6 @@ object HttpServer extends JsonFormats {
 				val result = (server ? FacebookServer.Server.AddPicture(info.userId, info.picture)).mapTo[String]
 				result onSuccess {
 					case result =>
-						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
 				}
 
@@ -85,7 +84,6 @@ object HttpServer extends JsonFormats {
 				val result = (server ? FacebookServer.Server.PostComment(info.userId, info.message,info.postId)).mapTo[String]
 				result onSuccess {
 					case result =>
-						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
 				}
 
@@ -96,7 +94,6 @@ object HttpServer extends JsonFormats {
 				val result = (server ? FacebookServer.Server.LikePage(info.userId, info.pageId, info.time)).mapTo[String]
 				result onSuccess {
 					case result =>
-						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
 				}
 
@@ -107,7 +104,6 @@ object HttpServer extends JsonFormats {
 				val result = (server ? FacebookServer.Server.LikePost(info.userId, info.postId, info.time)).mapTo[String]
 				result onSuccess {
 					case result =>
-						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
 				}
 			case HttpRequest(POST, Uri.Path("/createAccount"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
@@ -117,7 +113,6 @@ object HttpServer extends JsonFormats {
 				val result = (server ? FacebookServer.Server.CreateUser(info.uname, info.dob, info.email,info.key)).mapTo[String]
 				result onSuccess {
 					case result =>
-						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result))
 				}
 
@@ -128,7 +123,6 @@ object HttpServer extends JsonFormats {
 				val result = (server ? FacebookServer.Server.AddFriendRequest(info.senderId, info.recepientId,info.key)).mapTo[String]
 				result onSuccess {
 					case result =>
-						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
 				}
 
@@ -139,7 +133,6 @@ object HttpServer extends JsonFormats {
 				val result = (server ? FacebookServer.Server.AcceptFriendRequest(info.senderId, info.recepientId,info.key)).mapTo[String]
 				result onSuccess {
 					case result =>
-						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
 				}
 
@@ -150,19 +143,15 @@ object HttpServer extends JsonFormats {
 				val result = (server ? FacebookServer.Server.CreatePage(info.name,info.details,info.createrId)).mapTo[String]
 				result onSuccess {
 					case result =>
-						println(result)
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result.toString))
 				}
 
 			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/album" =>
 				var id = path.split("/").last.toString
-				println(id);
 				var client = sender
 				val result = (server ? FacebookServer.Server.GetAlbum(id)).mapTo[String]
-				println("-- "+id);
 				result onSuccess {
 					case result =>
-						println(result);
 						val body = HttpEntity(ContentTypes.`application/json`, result)
 						client ! HttpResponse(entity = body)
 				}
@@ -171,10 +160,8 @@ object HttpServer extends JsonFormats {
 				var id = path.split("/").last.toString
 				var client = sender
 				val result = (server ? FacebookServer.Server.GetFriendRequests(id)).mapTo[String]
-				println("-- " +id);
 				result onSuccess {
 					case result =>
-						println(result);
 						val body = HttpEntity(ContentTypes.`application/json`, result)
 						client ! HttpResponse(entity = body)
 				}
@@ -182,13 +169,10 @@ object HttpServer extends JsonFormats {
 
 			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/postDetails" =>
 				var id = path.split("/").last.toString
-				println(id);
 				var client = sender
 				val result = (server ? FacebookServer.Server.GetPostDetails(id)).mapTo[String]
-				println("-- "+id);
 				result onSuccess {
 					case result =>
-						println(result);
 						val body = HttpEntity(ContentTypes.`application/json`, result)
 						client ! HttpResponse(entity = body)
 				}
@@ -200,20 +184,16 @@ object HttpServer extends JsonFormats {
 				val result = (server ? FacebookServer.Server.GetPages(id)).mapTo[String]
 				result onSuccess {
 					case result =>
-						println(result);
 						val body = HttpEntity(ContentTypes.`application/json`, result)
 						client ! HttpResponse(entity = body)
 				}
 
 			case HttpRequest(GET, Uri.Path(path), _, _, _) if path startsWith "/user" =>
 				var id = path.split("/").last.toString
-				println(id);
 				var client = sender
 				val result = (server ? FacebookServer.Server.SendUserProfile(id)).mapTo[String]
-				println("-- "+id);
 				result onSuccess {
 					case result =>
-						println(result);
 						val body = HttpEntity(ContentTypes.`application/json`, result)
 						client ! HttpResponse(entity = body)
 				}
