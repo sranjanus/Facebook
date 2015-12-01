@@ -38,22 +38,25 @@ object HttpServer extends JsonFormats {
 			println("Wrong number of arguments!!!")
 			System.exit(0)
 		} else {
-			implicit val system = ActorSystem("HttpServer", ConfigFactory.load(ConfigFactory.parseString("""{ "akka" : { "actor" : { "provider" : "akka.remote.RemoteActorRefProvider" }, "remote" : { "enabled-transports" : [ "akka.remote.netty.tcp" ], "netty" : { "tcp" : { "port" : 8081 , "maximum-frame-size" : 12800000b } } } } } """)));
-			var Ip = args(0)
+			if(args(0) == "client"){
+				FacebookClient.run(args)
+			}else{
+				implicit val system = ActorSystem("HttpServer", ConfigFactory.load(ConfigFactory.parseString("""{ "akka" : { "actor" : { "provider" : "akka.remote.RemoteActorRefProvider" }, "remote" : { "enabled-transports" : [ "akka.remote.netty.tcp" ], "netty" : { "tcp" : { "port" : 8081 , "maximum-frame-size" : 12800000b } } } } } """)));
 
-			var watcher = system.actorOf(Props(new Watcher()), name = "Watcher")
+				var watcher = system.actorOf(Props(new Watcher()), name = "Watcher")
 
-	    	watcher ! FacebookServer.Watcher.Init
-	    	val server = system.actorSelection("user/Watcher/Router")
-			// val server = system.actorSelection("akka.tcp://FacebookServer@" + Ip + ":12000/user/Watcher/Router")
-			val ipAddress = InetAddress.getLocalHost.getHostAddress()
-			implicit val timeout: Timeout = 10.second // for the actor 'asks'
+		    	watcher ! FacebookServer.Watcher.Init
+		    	val server = system.actorSelection("user/Watcher/Router")
+				// val server = system.actorSelection("akka.tcp://FacebookServer@" + Ip + ":12000/user/Watcher/Router")
+				val ipAddress = InetAddress.getLocalHost.getHostAddress()
+				implicit val timeout: Timeout = 10.second // for the actor 'asks'
 
-			for(i  <- 0 to args(1).toInt - 1){
-				val handler = system.actorOf(Props(new HttpService(server)), name = "requestHandler" + i)
-				IO(Http) ? Http.Bind(handler, interface = ipAddress, port = 8080 + i + 2)
+				for(i  <- 0 to args(1).toInt - 1){
+					val handler = system.actorOf(Props(new HttpService(server)), name = "requestHandler" + i)
+					IO(Http) ? Http.Bind(handler, interface = ipAddress, port = 8080 + i + 2)
+				}
+
 			}
-
 		}
 
 

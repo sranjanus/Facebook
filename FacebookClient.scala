@@ -37,19 +37,20 @@ object FacebookClient extends JsonFormats {
   var ipAddress: String = ""
   var initPort = 8082
   var noOfPorts = 0
-  def main(args: Array[String]) {
+
+  def run(args: Array[String]) {
     // exit if arguments not passed as command line param.
-    if (args.length < 4) {
+    if (args.length < 5) {
       println("INVALID NO OF ARGS.  USAGE :")
       System.exit(1)
-    } else if (args.length == 4) {
-      var avgPostsPerSecond = args(0).toInt
-      var noOfUsers = args(1).toInt
-      ipAddress = args(2)
-      noOfPorts = args(3).toInt
+    } else if (args.length == 5) {
+      var avgPostsPerSecond = args(1).toInt
+      var noOfUsers = args(2).toInt
+      ipAddress = args(3)
+      noOfPorts = args(4).toInt
 
       // create actor system and a watcher actor.
-      val system = ActorSystem("FacebookClients", ConfigFactory.load(ConfigFactory.parseString("""{ "akka" : { "actor" : { "provider" : "akka.remote.RemoteActorRefProvider" }, "remote" : { "enabled-transports" : [ "akka.remote.netty.tcp" ], "netty" : { "tcp" : { "port" : 8080 , "maximum-frame-size" : 12800000b } } } } } """)))
+      val system = ActorSystem("FacebookClients", ConfigFactory.load(ConfigFactory.parseString("""{ "akka" : { "actor" : { "provider" : "akka.remote.RemoteActorRefProvider" }, "remote" : { "enabled-transports" : [ "akka.remote.netty.tcp" ], "netty" : { "tcp" : { "port" : 8090 , "maximum-frame-size" : 12800000b } } } } } """)))
       
       // creates a watcher Actor.
       val watcher = system.actorOf(Props(new Watcher(noOfUsers, avgPostsPerSecond)), name = "Watcher")
@@ -99,13 +100,15 @@ object FacebookClient extends JsonFormats {
       // Initialize Clients with info like number of Posts, duration of posts, start Time, router address. 
       node ! Client.Init(PostsPerUser(i), duration, indexes, absoluteStartTime, port)
       
-      var delay = noOfUsers * 1000
-      system.scheduler.scheduleOnce(delay milliseconds, self, CreateFriendNetwork)
 
       nodesArr += node
       context.watch(node)
     }
-
+    var delay = noOfUsers * 100
+    system.scheduler.scheduleOnce(delay milliseconds, self, CreateFriendNetwork)
+  	for (i <- 0 to noOfUsers - 1) {
+  		nodesArr(i) ! Client.StartReadRequests(absoluteStartTime)
+    }
     var startTime = System.currentTimeMillis()
     // end of constructor
 
@@ -123,9 +126,10 @@ object FacebookClient extends JsonFormats {
        	idsArr += id
 
        case CreateFriendNetwork =>
+       	println("called");
        	for(i <- 0 to noOfUsers - 1){
        		var node = nodesArr(i)
-       		for(j <- 0 to noOfUsers - 1){
+       		for(j <- i/2 to noOfUsers/2 - 1){
        			var id = idsArr(j)
        			node ! Client.SendFriendRequest(id + "")
       		}
@@ -159,6 +163,7 @@ object FacebookClient extends JsonFormats {
     case object LikePost
     case object CommentPost
     case object Stop
+    case class StartReadRequests(absoluteTime: Long)
   }
 
   class ClientInfo(id: String, name: String, dob: String, email: String, key: String){
@@ -214,6 +219,7 @@ object FacebookClient extends JsonFormats {
     }
 
     def runEvent() {
+
       if (!events.isEmpty) {
         var tmp = events.head
         var relative = (tmp.absTime - System.currentTimeMillis()).toInt
@@ -221,7 +227,10 @@ object FacebookClient extends JsonFormats {
           relative = 0
         }
         events.trimStart(1)
+        var temp = Random.nextInt(5)
         system.scheduler.scheduleOnce(relative milliseconds, self, Post(tmp.noOfPosts))
+        system.scheduler.scheduleOnce(relative milliseconds, self, GetNewsfeed)
+        system.scheduler.scheduleOnce(relative milliseconds, self, LikePost)
       } else {
         var relative = (endTime - System.currentTimeMillis()).toInt
         if (relative < 0) {
@@ -259,13 +268,10 @@ object FacebookClient extends JsonFormats {
     				if(resp.status == "SUCCESS"){
     					clientInfo.userId = resp.id
     					id = resp.id
-    					system.actorSelection("akka.tcp://FacebookClients@" + ipAddress + ":8080/user/Watcher") ! Watcher.AddUserId(resp.id)
+    					system.actorSelection("akka.tcp://FacebookClients@" + ipAddress + ":8090/user/Watcher") ! Watcher.AddUserId(resp.id)
     					println("User " + resp.id + " created!!!")
 
-    					var relative = (absTime - System.currentTimeMillis()).toInt
-        				cancellable = system.scheduler.schedule(relative milliseconds, 1 second, self, GetNewsfeed)
-                mCancellable = system.scheduler.schedule((relative + 10) milliseconds, 1 second, self, LikePost)
-                runEvent()
+        				runEvent()
     				}
 
     			case Failure(error) =>
@@ -307,7 +313,11 @@ object FacebookClient extends JsonFormats {
       //     case Success(str) =>
       //     case Failure(error) =>
       //   }
-
+      case StartReadRequests(absTime) =>
+        //   	var relative = (absTime - System.currentTimeMillis()).toInt
+      		// cancellable = system.scheduler.schedule(relative milliseconds, 1 second, self, GetNewsfeed)
+        //     mCancellable = system.scheduler.schedule((relative + 10) milliseconds, 1 second, self, LikePost)
+         
       case SendFriendRequest(rId: String) =>
       	val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
       	val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/sendFriendRequest", entity = HttpEntity(ContentTypes.`application/json`, FriendRequest(id, rId, clientInfo.ukey).toJson.toString))
