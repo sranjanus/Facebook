@@ -170,6 +170,7 @@ object FacebookClient extends JsonFormats {
     var privatekey = prvkey
     var symmkey = smkey
     var token = ""
+    var encryptedToken = ""
   }
 
   class Client(implicit system: ActorSystem) extends Actor {
@@ -277,11 +278,13 @@ object FacebookClient extends JsonFormats {
     				println("Account Creation: " + resp.status + ": " + resp.message)
     				if(resp.status == "SUCCESS"){
     					clientInfo.userId = resp.id
-              clientInfo.token = resp.message.split(":").last.toString
+              			clientInfo.token = resp.message.substring(6)
+              			clientInfo.encryptedToken = RSA.encrypt(clientInfo.token,clientInfo.privatekey)
+
     					system.actorSelection("akka.tcp://FacebookClients@" + ipAddress + ":8090/user/Watcher") ! Watcher.AddUserId(resp.id)
     					println("User " + resp.id + " created!!!")
-              self ! Post(1)
-        			//runEvent()
+              			self ! Post(1)
+        			runEvent()
     				}
 
     			case Failure(error) =>
@@ -299,17 +302,14 @@ object FacebookClient extends JsonFormats {
 
       case Post(noOfPosts: Int) =>
         for (j <- 1 to noOfPosts) {
-          var encryptedToken = RSA.encrypt(clientInfo.privatekey, clientInfo.token)
 
-          println("encrypted token = " + encryptedToken)
-
-          val pipeline: HttpRequest => Future[String] = (addHeader("userid", clientInfo.userId) ~> addHeader("token", encryptedToken) ~> sendReceive ~> unmarshal[String])
+          val pipeline: HttpRequest => Future[String] = (addHeader("userid", clientInfo.userId) ~> addHeader("token", clientInfo.encryptedToken) ~> sendReceive ~> unmarshal[String])
           val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/post", entity = HttpEntity(ContentTypes.`application/json`, SendPost(clientInfo.userId, System.currentTimeMillis(), generatePost()).toJson.toString))
           val responseFuture: Future[String] = pipeline(request)
           responseFuture onComplete {
             case Success(result) =>
             	var resp = result.parseJson.convertTo[Response]
-    				  println("Adding Post: " + resp.status + ": " + resp.message)
+    				  println("Adding Post: " + result)
     				if(resp.status == "SUCCESS"){
     				  //println("Post " + resp.id + " created by " + id + "!!!")
     				}
@@ -333,7 +333,7 @@ object FacebookClient extends JsonFormats {
         //     mCancellable = system.scheduler.schedule((relative + 10) milliseconds, 1 second, self, LikePost)
          
       case SendFriendRequest(rId: String) =>
-      	val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
+        val pipeline: HttpRequest => Future[String] = (addHeader("userid", clientInfo.userId) ~> addHeader("token", clientInfo.encryptedToken) ~> sendReceive ~> unmarshal[String])
       	val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/sendFriendRequest", entity = HttpEntity(ContentTypes.`application/json`, FriendRequest(clientInfo.userId, rId, clientInfo.publickey.toString).toJson.toString))
       	val responseFuture: Future[String] = pipeline(request)
       	responseFuture onComplete {
@@ -348,7 +348,7 @@ object FacebookClient extends JsonFormats {
       	}
 
       case AcceptFriendRequest(sId: String, key: String) =>
-      	val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
+        val pipeline: HttpRequest => Future[String] = (addHeader("userid", clientInfo.userId) ~> addHeader("token", clientInfo.encryptedToken) ~> sendReceive ~> unmarshal[String])
       	val request = HttpRequest(method = POST, uri="http://" + ipAddress + ":" + port + "/acceptFriendRequest", entity = HttpEntity(ContentTypes.`application/json`, FriendRequest(clientInfo.userId, sId, clientInfo.publickey.toString).toJson.toString))
       	val responseFuture: Future[String] = pipeline(request)
       	responseFuture onComplete {
@@ -367,7 +367,7 @@ object FacebookClient extends JsonFormats {
         if(newsfeedStore.size > 0){
           var randomIndex = rand.nextInt(newsfeedStore.size)
           var post = newsfeedStore(randomIndex)
-          val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
+        val pipeline: HttpRequest => Future[String] = (addHeader("userid", clientInfo.userId) ~> addHeader("token", clientInfo.encryptedToken) ~> sendReceive ~> unmarshal[String])
           val request = HttpRequest(method = POST, uri="http://" + ipAddress + ":" + port + "/likePost", entity = HttpEntity(ContentTypes.`application/json`, SendLikePost(clientInfo.userId, post.postId, System.currentTimeMillis).toJson.toString))
           val responseFuture: Future[String] = pipeline(request)
           responseFuture onComplete {
@@ -394,7 +394,9 @@ object FacebookClient extends JsonFormats {
         }
 
       case GetNewsfeed =>
-        val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
+
+        val pipeline: HttpRequest => Future[HttpResponse] = (addHeader("userid", clientInfo.userId) ~> addHeader("token", clientInfo.encryptedToken) ~> sendReceive)
+
         val request = HttpRequest(method = GET, uri = "http://" + ipAddress + ":" + port + "/newsfeed/" + clientInfo.userId)
         val responseFuture: Future[HttpResponse] = pipeline(request)
         responseFuture onComplete {
@@ -413,7 +415,7 @@ object FacebookClient extends JsonFormats {
         }
 
       case GetTimeline =>
-        val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
+        val pipeline: HttpRequest => Future[HttpResponse] = (addHeader("userid", clientInfo.userId) ~> addHeader("token", clientInfo.encryptedToken) ~> sendReceive)
         val request = HttpRequest(method = GET, uri = "http://" + ipAddress + ":" + port + "/timeline/" + clientInfo.userId)
         val responseFuture: Future[HttpResponse] = pipeline(request)
         responseFuture onComplete {
@@ -432,7 +434,7 @@ object FacebookClient extends JsonFormats {
         }
 
       case GetFriends =>
-        val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
+        val pipeline: HttpRequest => Future[HttpResponse] = (addHeader("userid", clientInfo.userId) ~> addHeader("token", clientInfo.encryptedToken) ~> sendReceive)
         val request = HttpRequest(method = GET, uri = "http://" + ipAddress + ":" + port + "/friends/" + clientInfo.userId)
         val responseFuture: Future[HttpResponse] = pipeline(request)
         responseFuture onComplete {
@@ -443,7 +445,7 @@ object FacebookClient extends JsonFormats {
         }
 
       case GetFriendRequests =>
-      	val pipeline: HttpRequest => Future[HttpResponse] = sendReceive
+        val pipeline: HttpRequest => Future[HttpResponse] = (addHeader("userid", clientInfo.userId) ~> addHeader("token", clientInfo.encryptedToken) ~> sendReceive)
       	val request = HttpRequest(method = GET, uri="http://" + ipAddress + ":" + port + "/getFriendRequests/" + clientInfo.userId)
       	val responseFuture: Future[HttpResponse] = pipeline(request)
       	responseFuture onComplete {

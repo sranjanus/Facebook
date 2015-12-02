@@ -122,7 +122,7 @@ object FacebookServer extends JsonFormats{
         var tmp2 = rdCtr.get() - rdTPS.sum
         rdTPS += (tmp2)
 
-        //println(counter + ": " + tmp1 + " , " + tmp2)
+        println(counter + ": " + tmp1 + " , " + tmp2)
         counter += 1
 
       case Terminated(ref) =>
@@ -176,25 +176,42 @@ object FacebookServer extends JsonFormats{
 		}
 
 		def genToken: String = {
-			"aaaa"
-			// val r = new scala.util.Random
-   //  		val sb = new StringBuilder
-   //  		for (i <- 1 to 10) {
-   //    			sb.append(r.nextPrintableChar)
-   //  		}
-   //  		sb.toString
+			val r = new scala.util.Random
+    		val sb = new StringBuilder
+    		for (i <- 1 to 10) {
+      			sb.append(r.nextPrintableChar)
+    		}
+    		sb.toString
+		}
+
+		def verifyToekn(user:User,token:String):Boolean = {
+			var valid = false
+			try{
+				var temp = RSA.decrypt(token,user.publicKey)
+				valid = (temp == user.token)
+				if(!valid){
+					println(user.token+" -- "+ temp)
+				}
+			}catch{
+				case e:Exception => println(e)
+			}
+			valid
 		}
 
 		// Receive block for the server.
 		final def receive = LoggingReceive {
 
 			case VerifyToken(userId,token) => 
-				if(users.containsKey(userId)){
-					var user = users.get(userId)
-					var strToken = RSA.decrypt(user.publicKey,token)
-					println(strToken)
+
+				if(users.containsKey(userId) ){
+					if(verifyToekn(users.get(userId),token)){
+						sender ! "SUCCESS"
+					}
+					else{
+						sender ! Response("FAILED","","Authentication error for user id: "+userId).toJson.toString					
+					}
 				}else{
-					sender ! Response("FAILED","","Invalid user").toJson.toString					
+					sender ! Response("FAILED","","Invalid user"+userId).toJson.toString					
 				}
 
 
@@ -314,7 +331,6 @@ object FacebookServer extends JsonFormats{
 				}
 
 			case CreateUser(uName, dob, email,key) =>
-				println("ccc"+key)
 				wCtr.addAndGet(1)
 				var newUserId = userIds.addAndGet(1).toString
 				var newUser = new User(newUserId+"", uName, dob, email,key, genToken)
@@ -431,6 +447,7 @@ object FacebookServer extends JsonFormats{
 					}
 					users.get(userId).timeline.add(postId)
 					sender ! Response("SUCCESS",postId+"","").toJson.toString
+				
 				}else{
 					sender ! Response("FAILED","","Invalid user").toJson.toString					
 				}
