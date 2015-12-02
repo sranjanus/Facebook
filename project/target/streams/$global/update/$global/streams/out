@@ -1,4 +1,4 @@
-[0m[[0minfo[0m] [0mUpdating {file:/Users/shashankranjan/GitHub/Facebook/project/}facebook-build...[0m
+[0m[[0minfo[0m] [0mUpdating {file:/Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/}facebook-build...[0m
 [0m[[0mdebug[0m] [0m:: resolving dependencies :: default#facebook-build;0.1-SNAPSHOT[0m
 [0m[[0mdebug[0m] [0m	confs: [compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool][0m
 [0m[[0mdebug[0m] [0m	validate = true[0m
@@ -16,7 +16,7 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies for default#facebook-build;0.1-SNAPSHOT [provided][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies default#facebook-build;0.1-SNAPSHOT->org.scala-lang#scala-library;2.10.4 [provided->default(compile)][0m
 [0m[[0minfo[0m] [0mResolving org.scala-lang#scala-library;2.10.4 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@42a2272d[0m
+[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@7be303f0[0m
 [0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.scala-lang#scala-library;2.10.4[0m
 [0m[[0mdebug[0m] [0m	found org.scala-lang#scala-library;2.10.4 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m	[2.10.4] org.scala-lang#scala-library;2.10.4[0m
@@ -1818,19 +1818,19 @@
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-sbt#apply-macro;0.13.7!apply-macro.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#jline;2.10.4!jline.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.fusesource.jansi#jansi;1.4!jansi.jar[0m
-[0m[[0mdebug[0m] [0m:: resolution report :: resolve 1510ms :: artifacts dl 103ms[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT compile produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-compile.xml[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT runtime produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-runtime.xml[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT test produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-test.xml[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT provided produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-provided.xml[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT optional produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-optional.xml[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT compile-internal produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-compile-internal.xml[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT runtime-internal produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-runtime-internal.xml[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT test-internal produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-test-internal.xml[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT plugin produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-plugin.xml[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT sources produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-sources.xml[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT docs produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-docs.xml[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT pom produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-pom.xml[0m
-[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT scala-tool produced in /Users/shashankranjan/GitHub/Facebook/project/target/resolution-cache/reports/default-facebook-build-scala-tool.xml[0m
-[0m[[0mdebug[0m] [0m	resolve done (1510ms resolve - 103ms download)[0m
+[0m[[0mdebug[0m] [0m:: resolution report :: resolve 1327ms :: artifacts dl 40ms[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT compile produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-compile.xml[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT runtime produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-runtime.xml[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT test produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-test.xml[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT provided produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-provided.xml[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT optional produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-optional.xml[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT compile-internal produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-compile-internal.xml[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT runtime-internal produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-runtime-internal.xml[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT test-internal produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-test-internal.xml[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT plugin produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-plugin.xml[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT sources produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-sources.xml[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT docs produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-docs.xml[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT pom produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-pom.xml[0m
+[0m[[0mdebug[0m] [0m	report for default#facebook-build;0.1-SNAPSHOT scala-tool produced in /Users/shashankranjan/Desktop/ShashankRanjanVipulMittalProject4/Facebook/project/target/resolution-cache/reports/default-facebook-build-scala-tool.xml[0m
+[0m[[0mdebug[0m] [0m	resolve done (1327ms resolve - 40ms download)[0m
 [0m[[0minfo[0m] [0mDone updating.[0m

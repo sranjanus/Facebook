@@ -21,12 +21,13 @@ import akka.routing.SmallestMailboxPool
 object FacebookServer extends JsonFormats{
 	case class sample(id: Int, name: String, noOfPosts: Int, friendsCount: Int) extends java.io.Serializable
 
-	class User (id: String, uName: String, dob: String, email: String, key : String) {
+	class User (id: String, uName: String, dob: String, email: String, key: String, tkn: String) {
 		var userId = id
 		var userName = uName
 		var dateOfBirth = dob
 		var emailAdd = email
 		var publicKey = key
+		var token = tkn
 		var newsfeed: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
 		var timeline: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
 		var messages: ArrayBuffer[String] = ArrayBuffer.empty
@@ -95,7 +96,9 @@ object FacebookServer extends JsonFormats{
     import context._
 
     // scheduler to count no. of tweets every 5 seconds.
-    var cancellable = system.scheduler.schedule(0 seconds, 1000 milliseconds, self, Time)
+    var counter = 0
+    var cancellable = system.scheduler.schedule(0 seconds, 1 second, self, Time)
+    //system.scheduler.schedule(0 seconds, 200 seconds, self, Terminated)
 
     // Start a router with 30 Actors in the Server.
     var cores = (Runtime.getRuntime().availableProcessors() * 1.5).toInt
@@ -118,7 +121,9 @@ object FacebookServer extends JsonFormats{
         wTPS += (tmp1)
         var tmp2 = rdCtr.get() - rdTPS.sum
         rdTPS += (tmp2)
-        println(tmp1 + " , " + tmp2)
+
+        //println(counter + ": " + tmp1 + " , " + tmp2)
+        counter += 1
 
       case Terminated(ref) =>
         if (ref == router) {
@@ -127,7 +132,7 @@ object FacebookServer extends JsonFormats{
           system.shutdown
         }
 
-      	case _ => println("FAILED HERE")
+      case _ => println("FAILED HERE")
     	}
   	}
 
@@ -155,6 +160,7 @@ object FacebookServer extends JsonFormats{
 		case class PostComment(userId:String,message:String,postId:String)
 		case class GetPostDetails(postId:String)
 		case class GetFriendRequests(userId:String)
+		case class VerifyToken(userId:String,token:String)
 	}
 
 	class Server extends Actor {
@@ -169,8 +175,28 @@ object FacebookServer extends JsonFormats{
 			return users.get(uName)
 		}
 
+		def genToken: String = {
+			"aaaa"
+			// val r = new scala.util.Random
+   //  		val sb = new StringBuilder
+   //  		for (i <- 1 to 10) {
+   //    			sb.append(r.nextPrintableChar)
+   //  		}
+   //  		sb.toString
+		}
+
 		// Receive block for the server.
 		final def receive = LoggingReceive {
+
+			case VerifyToken(userId,token) => 
+				if(users.containsKey(userId)){
+					var user = users.get(userId)
+					var strToken = RSA.decrypt(user.publicKey,token)
+					println(strToken)
+				}else{
+					sender ! Response("FAILED","","Invalid user").toJson.toString					
+				}
+
 
 			case PostComment(userId,message,postId) =>
 				if(postStore.containsKey(postId)){
@@ -288,11 +314,12 @@ object FacebookServer extends JsonFormats{
 				}
 
 			case CreateUser(uName, dob, email,key) =>
+				println("ccc"+key)
 				wCtr.addAndGet(1)
 				var newUserId = userIds.addAndGet(1).toString
-				var newUser = new User(newUserId+"", uName, dob, email,key)
+				var newUser = new User(newUserId+"", uName, dob, email,key, genToken)
 				users.put(newUserId+"",newUser)
-				sender ! Response("SUCCESS",newUserId+"","").toJson.toString			
+				sender ! Response("SUCCESS",newUserId+"","token:" + newUser.token).toJson.toString			
 
 
 			case SendUserProfile(userId) =>

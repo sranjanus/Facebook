@@ -4,7 +4,7 @@
 		module="facebookapp_2.11"
 		revision="1.0"
 		status="integration"
-		publication="20151130185710"
+		publication="20151201174006"
 	>
 		<description>
 		FacebookApp
@@ -43,5 +43,6 @@
 		<dependency org="com.typesafe.akka" name="akka-remote_2.11" rev="2.3.7" conf="compile->default(compile)"/>
 		<dependency org="org.specs2" name="specs2-core_2.11" rev="2.3.11" conf="test->default(compile)"/>
 		<dependency org="commons-lang" name="commons-lang" rev="2.6" conf="compile->default(compile)"/>
+		<dependency org="commons-codec" name="commons-codec" rev="1.9" conf="compile->default(compile)"/>
 	</dependencies>
 </ivy-module>

@@ -31,3 +31,4 @@ libraryDependencies ++= {
 }
 
 libraryDependencies += "commons-lang" % "commons-lang" % "2.6"
+libraryDependencies += "commons-codec" % "commons-codec" % "1.9"
