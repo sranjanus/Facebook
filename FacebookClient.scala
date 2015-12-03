@@ -278,7 +278,7 @@ object FacebookClient extends JsonFormats {
     				println("Account Creation: " + resp.status + ": " + resp.message)
     				if(resp.status == "SUCCESS"){
     					clientInfo.userId = resp.id
-              			clientInfo.token = resp.message.substring(6)
+              			clientInfo.token = RSA.decrypt(resp.message.substring(6), clientInfo.privatekey)
               			clientInfo.encryptedToken = RSA.encrypt(clientInfo.token,clientInfo.privatekey)
 
     					system.actorSelection("akka.tcp://FacebookClients@" + ipAddress + ":8090/user/Watcher") ! Watcher.AddUserId(resp.id)
@@ -463,8 +463,6 @@ object FacebookClient extends JsonFormats {
       	}
 
       case Stop =>
-        cancellable.cancel
-        mCancellable.cancel
         context.stop(self)
 
       case _ => println("FAILED")

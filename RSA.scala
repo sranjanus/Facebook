@@ -25,6 +25,14 @@ object RSA {
 		temp
 	}
 
+	def encrypt(text:String,key:PublicKey):String = {
+		var cipher = Cipher.getInstance("RSA");
+		cipher.init(Cipher.ENCRYPT_MODE, key);
+		var cipherText = cipher.doFinal(text.getBytes());
+		var temp = Base64.encodeBase64String(cipherText);
+		temp
+	}
+
 	def printbytes(b : Array[Byte]){
 		for(x <- b){
 			print(x.toInt+" ");
@@ -32,8 +40,17 @@ object RSA {
 		println("-----------------")
 	}
 
-  
-	def decrypt(text :String,  key:PublicKey ):String  ={
+  	def decrypt(text :String,  key:PrivateKey):String  ={
+		var dectyptedText = Base64.decodeBase64(text)
+		var cipher = Cipher.getInstance("RSA");
+
+		cipher.init(Cipher.DECRYPT_MODE, key);
+		dectyptedText = cipher.doFinal(dectyptedText);
+
+		new String(dectyptedText);
+	}
+
+	def decrypt(text :String,  key:PublicKey):String  ={
 		var dectyptedText = Base64.decodeBase64(text)
 		var cipher = Cipher.getInstance("RSA");
 
@@ -62,6 +79,11 @@ object RSA {
 		var keyFactory = KeyFactory.getInstance("RSA");
 		var pubKey = keyFactory.generatePublic(keySpec);
 		pubKey   
+  	}
+
+  	def encrypt(text :String,  key:String ):String = {
+  		var publicKey = decodePublicKey(key)
+		encrypt(text,publicKey)			
   	}
 
   	def decrypt(text :String,  key:String ):String = {

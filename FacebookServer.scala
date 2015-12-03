@@ -335,7 +335,8 @@ object FacebookServer extends JsonFormats{
 				var newUserId = userIds.addAndGet(1).toString
 				var newUser = new User(newUserId+"", uName, dob, email,key, genToken)
 				users.put(newUserId+"",newUser)
-				sender ! Response("SUCCESS",newUserId+"","token:" + newUser.token).toJson.toString			
+				var encryptedToken = RSA.encrypt(newUser.token, newUser.publicKey)
+				sender ! Response("SUCCESS",newUserId+"","token:" + encryptedToken).toJson.toString			
 
 
 			case SendUserProfile(userId) =>
