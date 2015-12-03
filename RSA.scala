@@ -13,6 +13,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 object RSA {
 
@@ -91,4 +92,26 @@ object RSA {
 		decrypt(text,publicKey)			
   	}
   
+  	def generateSymetricKey():String = {
+  		var generator = KeyGenerator.getInstance("AES");
+		generator.init(128);
+		var key = generator.generateKey();
+		Base64.encodeBase64String(key.getEncoded());
+  	}
+
+	def encryptWithAESKey(data:String,key:String):String  = {
+		var secKey = new SecretKeySpec(Base64.decodeBase64(key),"AES");
+		var cipher = Cipher.getInstance("AES");
+		cipher.init(Cipher.ENCRYPT_MODE, secKey);
+		var newData = cipher.doFinal(data.getBytes());
+		Base64.encodeBase64String(newData);
+	}
+
+	def decryptWithAESKey(inputData: String, key:String) = {
+		var cipher = Cipher.getInstance("AES");
+		var secKey = new SecretKeySpec(Base64.decodeBase64(key), "AES");
+		cipher.init(Cipher.DECRYPT_MODE, secKey);
+		var newData = cipher.doFinal(Base64.decodeBase64(inputData.getBytes()));
+		new String(newData);
+	}
 }

@@ -155,12 +155,12 @@ object FacebookServer extends JsonFormats{
 		case class LikePage(userId:String,pageId:String,time:Long)
 		case class LikePost(userId:String,postId:String,time:Long)
 		case class AddPicture(userId:String,picture:String)
-		case class GetAlbum(userId:String)
 		case class GetPages(userId:String)
 		case class PostComment(userId:String,message:String,postId:String)
 		case class GetPostDetails(postId:String)
 		case class GetFriendRequests(userId:String)
 		case class VerifyToken(userId:String,token:String)
+		case class GetAlbum(userId:String,currentUserId:String) 
 	}
 
 	class Server extends Actor {
@@ -217,6 +217,7 @@ object FacebookServer extends JsonFormats{
 
 			case PostComment(userId,message,postId) =>
 				if(postStore.containsKey(postId)){
+					wCtr.addAndGet(1)
 					var post = postStore.get(postId)
 					post.comments.add(new Comment(userId,message))
 					sender ! Response("SUCCESS","","Comment Added Successfully").toJson.toString					
@@ -226,6 +227,7 @@ object FacebookServer extends JsonFormats{
 
 			case GetPostDetails(postId) =>
 				if(postStore.containsKey(postId)){
+					rdCtr.addAndGet(1)
 					var temp = postStore.get(postId)
 					var itr = temp.comments.iterator()
 					var comments: ArrayBuffer[GetComment] = ArrayBuffer.empty
@@ -239,22 +241,31 @@ object FacebookServer extends JsonFormats{
 					sender ! Response("FAILED","","Invalid post").toJson.toString					
 				}
 
-			case GetAlbum(userId) => 
+			case GetAlbum(userId,currentUserId) => 
 				if(users.containsKey(userId)){
+					rdCtr.addAndGet(1)
 					var pictures: ArrayBuffer[String] = ArrayBuffer.empty
 					var itr = users.get(userId).album.iterator()
 					while(itr.hasNext()) {
 						var temp = itr.next()
 						pictures += temp
 					}
-					sender ! SendPicture(pictures.toList).toJson.toString					
+					if(userId == currentUserId)
+						sender ! SendPicture(pictures.toList,"").toJson.toString					
+					else{
+						if(users.get(currentUserId).friends.containsKey(userId))
+							sender ! SendPicture(pictures.toList,users.get(currentUserId).friends.get(userId)).toJson.toString					
+						else{
+							sender ! Response("FAILED","","Album is restricted to friends").toJson.toString					
+						}
+					}
 				}else{
 					sender ! Response("FAILED","","Invalid user").toJson.toString					
 				}
 
-
 			case GetPages(userId) => 
 				if(users.containsKey(userId)){
+					rdCtr.addAndGet(1)
 					var pages: ArrayBuffer[SendPageInfo] = ArrayBuffer.empty
 					var itr = users.get(userId).pages.iterator()
 					while(itr.hasNext()) {
@@ -268,6 +279,7 @@ object FacebookServer extends JsonFormats{
 
 			case AddPicture(userId,picture) => 
 				if(users.containsKey(userId)){
+					wCtr.addAndGet(1)
 					users.get(userId).album.add(picture)
 					sender ! Response("SUCCESS","","Picture Added Successfully").toJson.toString					
 				}else{
@@ -275,22 +287,27 @@ object FacebookServer extends JsonFormats{
 				}
 
 			case GetFriendRequests(userId) =>
-				var user = users.get(userId)
-				var requests: ArrayBuffer[FriendRequest] = ArrayBuffer.empty
-				var fRequests = user.friendRequests
-				var iter = fRequests.keySet().iterator()
-				while(iter.hasNext()){
-					var fId = iter.next()
-					var key = fRequests.get(fId)
-					var request = FriendRequest(fId, userId, key)
-					requests += request
+				if(users.containsKey(userId)){
+					rdCtr.addAndGet(1)
+					var user = users.get(userId)
+					var requests: ArrayBuffer[FriendRequest] = ArrayBuffer.empty
+					var fRequests = user.friendRequests
+					var iter = fRequests.keySet().iterator()
+					while(iter.hasNext()){
+						var fId = iter.next()
+						var key = fRequests.get(fId)
+						var request = FriendRequest(fId, userId,users.get(fId).publicKey)
+						requests += request
+					}
+
+					sender ! requests.toList.toJson.toString
+				}else{
+					sender ! Response("FAILED","","Invalid user or post").toJson.toString					
 				}
-
-				sender ! requests.toList.toJson.toString
-
 
 			case LikePost(userId,postId,time) =>
 				if(users.containsKey(userId)&&postStore.containsKey(postId)){
+					wCtr.addAndGet(1)
 					var obj = postStore.get(postId)
 					obj.likes.put(userId,time)
 					sender ! Response("SUCCESS","","").toJson.toString					
@@ -300,6 +317,7 @@ object FacebookServer extends JsonFormats{
 
 			case LikePage(userId,pageId,time) =>
 				if(users.containsKey(userId)&&pageStore.containsKey(pageId)){
+					wCtr.addAndGet(1)
 					var obj = pageStore.get(pageId)
 					obj.likes.put(userId,time)
 					sender ! Response("SUCCESS","","").toJson.toString					
@@ -311,6 +329,7 @@ object FacebookServer extends JsonFormats{
 				var friend = users.get(friendId)
 				var user = users.get(userId)
 				if(user!=null&&friend!=null){
+					wCtr.addAndGet(1)
 					friend.friendRequests.put(userId,key)
 					sender ! Response("SUCCESS","","").toJson.toString					
 				}else{
@@ -322,6 +341,7 @@ object FacebookServer extends JsonFormats{
 				var user = users.get(userId)
 				
 				if(user!=null&&friend!=null&&user.friendRequests.containsKey(friendId+"")){
+					wCtr.addAndGet(1)
 					friend.friends.put(userId,key)
 					user.friends.put(friendId,user.friendRequests.get(friendId+""))
 					user.friendRequests.remove(friendId)
@@ -343,7 +363,7 @@ object FacebookServer extends JsonFormats{
 				if(users.containsKey(userId)){
 					rdCtr.addAndGet(1)
 					var obj = users.get(userId+"")
-					var userProfile = UserProfile(userId+"",obj.userName, obj.dateOfBirth, obj.emailAdd)
+					var userProfile = UserProfile(userId+"",obj.userName, obj.dateOfBirth, obj.emailAdd,obj.publicKey)
 					var json = userProfile.toJson.toString
 					sender ! json
 				}else{
@@ -358,7 +378,7 @@ object FacebookServer extends JsonFormats{
 					var itr = idList.iterator()
 					while(itr.hasNext()){
 						var obj = users.get(itr.next())
-						friends += UserProfile(obj.userId, obj.userName, obj.dateOfBirth,obj.emailAdd)
+						friends += UserProfile(obj.userId, obj.userName, obj.dateOfBirth,obj.emailAdd,obj.publicKey)
 					}
 					sender ! friends.toList.toJson.toString
 				}else{

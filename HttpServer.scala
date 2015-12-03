@@ -121,7 +121,7 @@ object HttpServer extends JsonFormats {
 					case result =>
 						client ! HttpResponse(entity = HttpEntity(ContentTypes.`application/json`, result))
 				}
-				
+
 			case HttpRequest(POST, Uri.Path("/sendFriendRequest"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
 				val info = entity.data.asString.parseJson.convertTo[FriendRequest]
 				getData(sender,header1,FacebookServer.Server.AddFriendRequest(info.senderId, info.recepientId,info.key))
@@ -136,7 +136,12 @@ object HttpServer extends JsonFormats {
 
 			case HttpRequest(GET, Uri.Path(path), header1:List[HttpHeader], _, _) if path startsWith "/album" =>
 				var id = path.split("/").last.toString
-				getData(sender,header1,FacebookServer.Server.GetAlbum(id))
+				var userid:String = ""
+				for(x <- header1){
+					if(x.name == "userid")
+						userid = x.value
+				}	
+				getData(sender,header1,FacebookServer.Server.GetAlbum(id,userid))
 
 			case HttpRequest(GET, Uri.Path(path), header1:List[HttpHeader], _, _) if path startsWith "/getFriendRequests" =>
 				var id = path.split("/").last.toString

@@ -14,7 +14,7 @@ import spray.json.pimpAny
 
 trait JsonFormats extends DefaultJsonProtocol {
   case class SendPost(userId: String, time: Long, msg: String)
-  case class UserProfile(userId:String,uname: String, dob: String, email: String)
+  case class UserProfile(userId:String,uname: String, dob: String, email: String,key:String)
   case class UserInfo(uname: String, dob: String, email: String, key: String)
   case class SendMsg(senderId: Int, time: Long, msg: String, recepientId: Int)
   case class FriendRequest(senderId: String, recepientId: String,key:String)
@@ -26,14 +26,14 @@ trait JsonFormats extends DefaultJsonProtocol {
   case class SendLikePost(userId:String,postId:String,time:Long)
   case class Response(status:String, id:String,message:String)
   case class SendAddPicture(userId:String,picture:String)
-  case class SendPicture(picture:List[String])
+  case class SendPicture(picture:List[String],key:String)
   case class SendComment(userId:String,message:String,postId:String)
   case class GetComment(userId:String,message:String)
   case class SendPostDetails(postId:String,userId: String, time: Long, msg: String,likes:Int,comments:List[GetComment])
 
 
   implicit val postFormat = jsonFormat3(SendPost)
-  implicit val userProfileFormat = jsonFormat4(UserProfile)
+  implicit val userProfileFormat = jsonFormat5(UserProfile)
   implicit val userInfoFormat = jsonFormat4(UserInfo)
   implicit val msgFormat = jsonFormat4(SendMsg)
   implicit val friendRequestFormat = jsonFormat3(FriendRequest)
@@ -45,7 +45,7 @@ trait JsonFormats extends DefaultJsonProtocol {
   implicit val sendLikePostFormat = jsonFormat3(SendLikePost)
   implicit val responseFormat = jsonFormat3(Response)
   implicit val sendAddPictureFormat = jsonFormat2(SendAddPicture)
-  implicit val sendPictureFormat = jsonFormat1(SendPicture)
+  implicit val sendPictureFormat = jsonFormat2(SendPicture)
   implicit val sendCommentFormat = jsonFormat3(SendComment)
   implicit val getCommentFormat = jsonFormat2(GetComment)
   implicit val sendPostDetailsFormat = jsonFormat6(SendPostDetails)
