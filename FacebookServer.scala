@@ -17,6 +17,7 @@ import akka.actor.Terminated
 import akka.actor.actorRef2Scala
 import akka.event.LoggingReceive
 import akka.routing.SmallestMailboxPool
+import java.security._
 
 object FacebookServer extends JsonFormats{
 	case class sample(id: Int, name: String, noOfPosts: Int, friendsCount: Int) extends java.io.Serializable
@@ -34,7 +35,7 @@ object FacebookServer extends JsonFormats{
 		var friends: ConcurrentHashMap[String, String] = new ConcurrentHashMap()
 		var friendRequests: ConcurrentHashMap[String, String] = new ConcurrentHashMap()
 		var pages: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
-		var album: ConcurrentLinkedQueue[String] = new ConcurrentLinkedQueue()
+		var album: ConcurrentLinkedQueue[Picture] = new ConcurrentLinkedQueue()
 	}
 
 	class Page( pid : String,pName:String,pDetails:String,pCreaterId:String){
@@ -46,15 +47,21 @@ object FacebookServer extends JsonFormats{
 		var likes: ConcurrentHashMap[String,Long] = new ConcurrentHashMap()
 	}
 
-	class Posts(pid: String, id: String, post: String, time: Long, tagList: ArrayBuffer[String] = ArrayBuffer.empty, hashtagList: ArrayBuffer[String] = ArrayBuffer.empty){
+	class Posts(pid: String, id: String,ivv: String, post: String, time: Long, tagList: ArrayBuffer[String] = ArrayBuffer.empty, hashtagList: ArrayBuffer[String] = ArrayBuffer.empty){
 		var authorId = id
 		var message = post
 		var timeStamp: Long = time
 		var postId = pid
+		var iv = ivv
 		var tags = tagList
 		var hashtags = hashtagList
 		var likes: ConcurrentHashMap[String, Long] = new ConcurrentHashMap()
 		var comments: ConcurrentLinkedQueue[Comment] = new ConcurrentLinkedQueue()
+	}
+
+	class Picture(pic:String,ivv:String) {
+		var info = pic
+		var iv = ivv
 	}
 
 	class Comment(uid:String,msg:String){
@@ -85,6 +92,8 @@ object FacebookServer extends JsonFormats{
 	var postStore: ConcurrentHashMap[String, Posts] = new ConcurrentHashMap()
 	var msgStore: ConcurrentHashMap[String, Messages] = new ConcurrentHashMap()
 	var pageStore: ConcurrentHashMap[String, Page] = new ConcurrentHashMap()
+
+	var publicKey: String = null
 
 	object Watcher {
     	case object Init
@@ -139,7 +148,7 @@ object FacebookServer extends JsonFormats{
 	object Server {
 		case class CreateUser(uName: String, dob: String, email: String,key:String)
 		case class LoginUser(uName: String, pass: String)
-		case class AddPost(userId: String, time: Long, msg: String)
+		case class AddPost(userId: String, time: Long, msg: String,iv:String)
 		case class PagePost(userId: String, time: Long, msg: String)
 		case class AddMsg(sId: Int, time: Long, msg: String, rId: Int)
 		case class SendMessages(userId: String)
@@ -154,7 +163,7 @@ object FacebookServer extends JsonFormats{
 		case class GetPagePosts(id:String)
 		case class LikePage(userId:String,pageId:String,time:Long)
 		case class LikePost(userId:String,postId:String,time:Long)
-		case class AddPicture(userId:String,picture:String)
+		case class AddPicture(userId:String,picture:String,iv:String)
 		case class GetPages(userId:String)
 		case class PostComment(userId:String,message:String,postId:String)
 		case class GetPostDetails(postId:String)
@@ -244,11 +253,11 @@ object FacebookServer extends JsonFormats{
 			case GetAlbum(userId,currentUserId) => 
 				if(users.containsKey(userId)){
 					rdCtr.addAndGet(1)
-					var pictures: ArrayBuffer[String] = ArrayBuffer.empty
+					var pictures: ArrayBuffer[GetPicture] = ArrayBuffer.empty
 					var itr = users.get(userId).album.iterator()
 					while(itr.hasNext()) {
 						var temp = itr.next()
-						pictures += temp
+						pictures += GetPicture(temp.info,temp.iv)
 					}
 					if(userId == currentUserId)
 						sender ! SendPicture(pictures.toList,"").toJson.toString					
@@ -277,10 +286,10 @@ object FacebookServer extends JsonFormats{
 					sender ! Response("FAILED","","Invalid user").toJson.toString					
 				}
 
-			case AddPicture(userId,picture) => 
+			case AddPicture(userId,picture,iv) => 
 				if(users.containsKey(userId)){
 					wCtr.addAndGet(1)
-					users.get(userId).album.add(picture)
+					users.get(userId).album.add(new Picture(picture,iv))
 					sender ! Response("SUCCESS","","Picture Added Successfully").toJson.toString					
 				}else{
 					sender ! Response("FAILED","","Invalid user").toJson.toString					
@@ -353,7 +362,7 @@ object FacebookServer extends JsonFormats{
 			case CreateUser(uName, dob, email,key) =>
 				wCtr.addAndGet(1)
 				var newUserId = userIds.addAndGet(1).toString
-				var newUser = new User(newUserId+"", uName, dob, email,key, genToken)
+				var newUser = new User(newUserId+"", uName, dob, email, key, genToken)
 				users.put(newUserId+"",newUser)
 				var encryptedToken = RSA.encrypt(newUser.token, newUser.publicKey)
 				sender ! Response("SUCCESS",newUserId+"","token:" + encryptedToken).toJson.toString			
@@ -404,7 +413,7 @@ object FacebookServer extends JsonFormats{
 					var itr = obj.posts.iterator()
 					while(itr.hasNext()) {
 						var temp = postStore.get(itr.next())
-						posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size,temp.comments.size)
+						posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size,temp.comments.size,temp.iv)
 					}
 					sender ! posts.toList.toJson.toString
 				}else{
@@ -419,7 +428,7 @@ object FacebookServer extends JsonFormats{
 					var itr = postIds.iterator()
 					while(itr.hasNext()) {
 						var temp = postStore.get(itr.next())
-						posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size,temp.comments.size)
+						posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size,temp.comments.size,temp.iv)
 					}
 					sender ! posts.toList.toJson.toString
 				}else{
@@ -434,19 +443,19 @@ object FacebookServer extends JsonFormats{
 					var itr = postIds.iterator()
 					while(itr.hasNext()) {
 						var temp = postStore.get(itr.next())
-						posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size,temp.comments.size)
+						posts += GetPost(temp.postId,temp.authorId,temp.timeStamp,temp.message,temp.likes.size,temp.comments.size,temp.iv)
 					}
 					sender ! posts.toList.toJson.toString
 				}else{
 					sender ! Response("FAILED","","Invalid user").toJson.toString					
 				}
-			case AddPost(userId, time, msg) =>
+			case AddPost(userId, time, msg,iv) =>
 				if(users.containsKey(userId)){
 					var regexTags = "@[a-zA-Z0-9]+\\s*".r
 					var regexHashtags = "#[a-zA-Z0-9]+\\s*".r
 					wCtr.addAndGet(1).toString // generate postId
 					var postId = postIds.addAndGet(1).toString
-					var newPost = new Posts(postId, userId, msg, time)
+					var newPost = new Posts(postId, userId, iv,msg, time)
 
 					// extract tags and store in post object
 					var itr = regexTags.findAllMatchIn(msg)
@@ -479,7 +488,7 @@ object FacebookServer extends JsonFormats{
 					var regexHashtags = "#[a-zA-Z0-9]+\\s*".r
 					wCtr.addAndGet(1).toString // generate postId
 					var postId = postIds.addAndGet(1).toString
-					var newPost = new Posts(postId, pageId, msg, time)
+					var newPost = new Posts(postId, pageId,"", msg, time)
 
 					// extract tags and store in post object
 					var itr = regexTags.findAllMatchIn(msg)

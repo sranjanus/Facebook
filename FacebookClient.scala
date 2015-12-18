@@ -34,6 +34,7 @@ import scala.concurrent.Await
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.Duration
 import akka.util.Timeout
+import org.apache.commons.codec.binary.Base64
 
 object FacebookClient extends JsonFormats {
   var ipAddress: String = ""
@@ -70,7 +71,7 @@ object FacebookClient extends JsonFormats {
 
     val pdf = new PDF()
     val rnd = new Random
-
+    var serverPublicKey:String = null;
     var PostsPerUser = pdf.exponential(1.0 / 307.0).sample(noOfUsers).map(_.toInt)
     PostsPerUser = PostsPerUser.sortBy(a => a)
 
@@ -88,7 +89,7 @@ object FacebookClient extends JsonFormats {
       }
       indexes += tmp
     }
-
+	
     // keep track of Client Actors.
     var nodesArr = ArrayBuffer.empty[ActorRef]
     var idsArr = ArrayBuffer.empty[String]
@@ -197,6 +198,7 @@ object FacebookClient extends JsonFormats {
     var ctr = 0
     var endTime: Long = 0
     var port = 0
+    var serverPublicKey:String = null
     /* Constructor Ended */
 
     var clientInfo: ClientInfo = null
@@ -280,9 +282,12 @@ object FacebookClient extends JsonFormats {
 
     def CreateAccount(absTime: Long) = {
     	clientInfo = generateUserInfo()
-
     	val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
-    	val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/createAccount", entity = HttpEntity(ContentTypes.`application/json`, UserInfo(clientInfo.uname, clientInfo.udob, clientInfo.uemail, RSA.encodePublicKey(clientInfo.publickey)).toJson.toString))
+    	val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/createAccount", 
+    		entity = HttpEntity(ContentTypes.`application/json`, 
+    			UserInfo(clientInfo.uname, clientInfo.udob, clientInfo.uemail, 
+    				RSA.encodePublicKey(clientInfo.publickey)).toJson.toString))
+
     	val responseFuture: Future[String] = pipeline(request)
     		responseFuture onComplete {
     			case Success(result) =>
@@ -292,12 +297,12 @@ object FacebookClient extends JsonFormats {
     					clientInfo.userId = resp.id
               			clientInfo.token = RSA.decrypt(resp.message.substring(6),clientInfo.privatekey)
               			clientInfo.encryptedToken = RSA.encrypt(clientInfo.token,clientInfo.privatekey)
-              			clientInfo.symmkey = RSA.generateSymetricKey
+              			clientInfo.symmkey = AES.generateKey
     					system.actorSelection("akka.tcp://FacebookClients@" + ipAddress + ":8090/user/Watcher") ! Watcher.AddUserId(resp.id)
     					println("User " + resp.id + " created!!!")
               			self ! AddPicture(genName)
               			self ! AddPicture(genName)
-
+              			self ! GetAlbum(resp.id)
         				runEvent()
     				}
 
@@ -312,13 +317,22 @@ object FacebookClient extends JsonFormats {
         Initialize(avgNoOfPosts, duration, indexes)
         port = portNo
         setAbsoluteTime(absoluteTime)
-        CreateAccount(absoluteTime)
+        val pipeline: HttpRequest => Future[String] = sendReceive ~> unmarshal[String]
+		val request = HttpRequest(method = GET, uri = "http://" + ipAddress + ":"+initPort + "/getPublicKey")
+		val responseFuture: Future[String] = pipeline(request)
+		responseFuture onComplete {
+		case Success(result) =>
+			serverPublicKey = result
+			//println("******  "+serverPublicKey)
+			CreateAccount(absoluteTime)
+		}
 
       case AddPicture(oritinalPic) =>
       	  println("Pic added: "+oritinalPic)
+          val (encryptedPicture, encodedIv) = AES.encrypt(clientInfo.symmkey, oritinalPic)
       	  val pipeline: HttpRequest => Future[String] = (addHeader("userid", clientInfo.userId) ~> addHeader("token", clientInfo.encryptedToken) ~> sendReceive ~> unmarshal[String])
           val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/addPicture", entity = HttpEntity(ContentTypes.`application/json`, 
-          	SendAddPicture(clientInfo.userId, RSA.encryptWithAESKey(oritinalPic,clientInfo.symmkey)).toJson.toString))
+          	SendAddPicture(clientInfo.userId, encryptedPicture,encodedIv).toJson.toString))
           val responseFuture: Future[String] = pipeline(request)
           responseFuture onComplete {
             case Success(result) =>
@@ -326,7 +340,6 @@ object FacebookClient extends JsonFormats {
     				  println("Adding pic: " + result)
     				if(resp.status == "SUCCESS"){
     					self ! GetAlbum(clientInfo.userId)
-    				  //println("Post " + resp.id + " created by " + id + "!!!")
     				}
             case Failure(error) =>
     				println("Adding Post: " + error)
@@ -340,12 +353,13 @@ object FacebookClient extends JsonFormats {
             var album = result.entity.data.asString.parseJson.convertTo[SendPicture]
             var iter = album.picture.iterator
             while(iter.hasNext){
-              var post = iter.next()
-              println("before: "+post)
-              if(userId == clientInfo.userId)
-              	println("After: "+RSA.decryptWithAESKey(post,clientInfo.symmkey))
-              else{
-              	println("After: "+RSA.decryptWithAESKey(post,RSA.decrypt(album.key,clientInfo.privatekey)))
+              var picture = iter.next()
+              println("before: "+picture.pic)
+              if(userId == clientInfo.userId){
+                println(clientInfo.symmkey)
+              	println("After: "+new String(Base64.decodeBase64(AES.decrypt(clientInfo.symmkey, picture.pic, picture.iv))))
+              }else{
+              	println("After: "+new String(Base64.decodeBase64(AES.decrypt(RSA.decrypt(album.key,clientInfo.privatekey), picture.pic, picture.iv))))
               }
             }
           case Failure(error) =>
@@ -355,8 +369,10 @@ object FacebookClient extends JsonFormats {
 
       case Post(noOfPosts: Int) =>
         for (j <- 1 to noOfPosts) {
+
+          val (encryptedPost, encodedIv) = AES.encrypt(clientInfo.symmkey, generatePost())
           val pipeline: HttpRequest => Future[String] = (addHeader("userid", clientInfo.userId) ~> addHeader("token", clientInfo.encryptedToken) ~> sendReceive ~> unmarshal[String])
-          val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/post", entity = HttpEntity(ContentTypes.`application/json`, SendPost(clientInfo.userId, System.currentTimeMillis(), generatePost()).toJson.toString))
+          val request = HttpRequest(method = POST, uri = "http://" + ipAddress + ":" + port + "/post", entity = HttpEntity(ContentTypes.`application/json`, SendPost(clientInfo.userId, System.currentTimeMillis(), encryptedPost,encodedIv).toJson.toString))
           val responseFuture: Future[String] = pipeline(request)
           responseFuture onComplete {
             case Success(result) =>

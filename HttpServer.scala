@@ -31,6 +31,8 @@ import spray.json.pimpAny
 import spray.json.pimpString
 import spray.http.ContentTypes
 import FacebookServer._
+import java.security._
+
 
 object HttpServer extends JsonFormats {
 	def main(args: Array[String]){
@@ -65,7 +67,7 @@ object HttpServer extends JsonFormats {
 	class HttpService(server: ActorSelection) extends Actor {
 		implicit val timeout: Timeout = 5.second // for the actor 'asks'
 		import context.dispatcher
-
+		var keyPair = RSA.generateKey
 		def getData(sender:ActorRef,header1: List[HttpHeader],msg: Object){
 			var client = sender
 				var userid:String = ""
@@ -99,7 +101,7 @@ object HttpServer extends JsonFormats {
 			//Working end points
 			case HttpRequest(POST, Uri.Path("/addPicture"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
 				val info = entity.data.asString.parseJson.convertTo[SendAddPicture]
-				getData(sender,header1,FacebookServer.Server.AddPicture(info.userId, info.picture))
+				getData(sender,header1,FacebookServer.Server.AddPicture(info.userId, info.picture,info.iv))
 				
 			case HttpRequest(POST, Uri.Path("/postComment"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
 				val info = entity.data.asString.parseJson.convertTo[SendComment]
@@ -143,6 +145,9 @@ object HttpServer extends JsonFormats {
 				}	
 				getData(sender,header1,FacebookServer.Server.GetAlbum(id,userid))
 
+			case HttpRequest(GET, Uri.Path(path), header1:List[HttpHeader], _, _) if path startsWith "/getPublicKey" =>
+				sender ! HttpResponse(entity = RSA.encodePublicKey(keyPair.getPublic))
+
 			case HttpRequest(GET, Uri.Path(path), header1:List[HttpHeader], _, _) if path startsWith "/getFriendRequests" =>
 				var id = path.split("/").last.toString
 				getData(sender,header1,FacebookServer.Server.GetFriendRequests(id))
@@ -161,7 +166,7 @@ object HttpServer extends JsonFormats {
 
 			case HttpRequest(POST, Uri.Path("/post"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
 				val post = entity.data.asString.parseJson.convertTo[SendPost]
-				getData(sender,header1,FacebookServer.Server.AddPost(post.userId, post.time, post.msg))			
+				getData(sender,header1,FacebookServer.Server.AddPost(post.userId, post.time, post.msg,post.iv))			
 
 			case HttpRequest(POST, Uri.Path("/pagePost"), header1:List[HttpHeader], entity: HttpEntity.NonEmpty, _) =>
 				val post = entity.data.asString.parseJson.convertTo[SendPagePost]

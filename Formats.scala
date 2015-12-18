@@ -13,38 +13,40 @@ import spray.json.JsonFormat
 import spray.json.pimpAny
 
 trait JsonFormats extends DefaultJsonProtocol {
-  case class SendPost(userId: String, time: Long, msg: String)
+  case class SendPost(userId: String, time: Long, msg: String,iv:String)
   case class UserProfile(userId:String,uname: String, dob: String, email: String,key:String)
   case class UserInfo(uname: String, dob: String, email: String, key: String)
   case class SendMsg(senderId: Int, time: Long, msg: String, recepientId: Int)
   case class FriendRequest(senderId: String, recepientId: String,key:String)
-  case class GetPost(postId:String,userId: String, time: Long, msg: String,likes:Int,comments:Int)
+  case class GetPost(postId:String,userId: String, time: Long, msg: String,likes:Int,comments:Int,iv:String)
   case class CreatePageInfo(name:String,details:String,createrId:String)
   case class SendPageInfo(id:String,name:String,details:String,createrId:String,likes:Int,post:Int)
   case class SendPagePost(pageId: String, time: Long, msg: String)
   case class SendLikePage(userId:String,pageId:String,time:Long)
   case class SendLikePost(userId:String,postId:String,time:Long)
   case class Response(status:String, id:String,message:String)
-  case class SendAddPicture(userId:String,picture:String)
-  case class SendPicture(picture:List[String],key:String)
+  case class SendAddPicture(userId:String,picture:String,iv:String)
+  case class SendPicture(picture:List[GetPicture],key:String)
   case class SendComment(userId:String,message:String,postId:String)
   case class GetComment(userId:String,message:String)
   case class SendPostDetails(postId:String,userId: String, time: Long, msg: String,likes:Int,comments:List[GetComment])
+  case class GetPicture(pic:String,iv:String)
 
 
-  implicit val postFormat = jsonFormat3(SendPost)
+  implicit val getPictureFormat = jsonFormat2(GetPicture)
+  implicit val postFormat = jsonFormat4(SendPost)
   implicit val userProfileFormat = jsonFormat5(UserProfile)
   implicit val userInfoFormat = jsonFormat4(UserInfo)
   implicit val msgFormat = jsonFormat4(SendMsg)
   implicit val friendRequestFormat = jsonFormat3(FriendRequest)
-  implicit val getPostFormat = jsonFormat6(GetPost)
+  implicit val getPostFormat = jsonFormat7(GetPost)
   implicit val createPageFormat = jsonFormat3(CreatePageInfo)
   implicit val sendPageInfoFormat = jsonFormat6(SendPageInfo)
   implicit val sendPagePostFormat = jsonFormat3(SendPagePost)
   implicit val sendLikePageFormat = jsonFormat3(SendLikePage)
   implicit val sendLikePostFormat = jsonFormat3(SendLikePost)
   implicit val responseFormat = jsonFormat3(Response)
-  implicit val sendAddPictureFormat = jsonFormat2(SendAddPicture)
+  implicit val sendAddPictureFormat = jsonFormat3(SendAddPicture)
   implicit val sendPictureFormat = jsonFormat2(SendPicture)
   implicit val sendCommentFormat = jsonFormat3(SendComment)
   implicit val getCommentFormat = jsonFormat2(GetComment)
@@ -57,11 +59,12 @@ trait JsonFormats extends DefaultJsonProtocol {
       "timeStamp" -> JsString(c.timeStamp.toString),
       "postId" -> JsString(c.postId),
       "tags" -> JsArray(c.tags.map(_.toJson).toVector),
-      "hashtags" -> JsArray(c.hashtags.map(_.toJson).toVector))
+      "hashtags" -> JsArray(c.hashtags.map(_.toJson).toVector),
+      "iv" -> JsString(c.iv))
     def read(value: JsValue) = {
-      value.asJsObject.getFields("postId", "authorId", "message", "timeStamp", "tags", "hashtags") match {
-        case Seq(JsString(postId), JsString(authorId), JsString(message), JsString(timeStamp), JsArray(tags), JsArray(hashtags)) =>
-          new FacebookServer.Posts(postId, authorId, message, timeStamp.toLong, tags.map(_.convertTo[String]).to[ArrayBuffer], hashtags.map(_.convertTo[String]).to[ArrayBuffer])
+      value.asJsObject.getFields("postId", "authorId", "iv","message", "timeStamp", "tags", "hashtags") match {
+        case Seq(JsString(postId), JsString(authorId),JsString(iv), JsString(message), JsString(timeStamp), JsArray(tags), JsArray(hashtags)) =>
+          new FacebookServer.Posts(postId, authorId,iv, message, timeStamp.toLong, tags.map(_.convertTo[String]).to[ArrayBuffer], hashtags.map(_.convertTo[String]).to[ArrayBuffer])
         case _ => throw new DeserializationException("Posts expected")
       }
     }
